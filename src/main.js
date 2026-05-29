@@ -19,6 +19,7 @@ const startedAt = new Date();
 const rawInput = await Actor.getInput();
 const input = normalizeInput(rawInput || {});
 const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfiguration);
+const headless = !Actor.isAtHome();
 const isUsingDefaultResidentialProxy = input.proxyConfiguration?.useApifyProxy !== false
   && (input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [])
     .includes('RESIDENTIAL');
@@ -73,8 +74,8 @@ const searchCrawler = new PlaywrightCrawler({
   maxConcurrency: input.maxConcurrency,
   requestHandlerTimeoutSecs: input.requestTimeoutSecs,
   navigationTimeoutSecs: input.requestTimeoutSecs,
-  maxRequestRetries: 4,
-  maxSessionRotations: 10,
+  maxRequestRetries: 2,
+  maxSessionRotations: 4,
   retryOnBlocked: true,
   persistCookiesPerSession: true,
   browserPoolOptions: {
@@ -83,7 +84,7 @@ const searchCrawler = new PlaywrightCrawler({
   },
   launchContext: {
     launchOptions: {
-      headless: true,
+      headless,
     },
   },
   preNavigationHooks: [
@@ -201,8 +202,8 @@ if (input.includeDescription && collectedJobs.length) {
     maxConcurrency: Math.min(input.maxConcurrency, 2),
     requestHandlerTimeoutSecs: input.requestTimeoutSecs,
     navigationTimeoutSecs: input.requestTimeoutSecs,
-    maxRequestRetries: 3,
-    maxSessionRotations: 8,
+    maxRequestRetries: 2,
+    maxSessionRotations: 4,
     retryOnBlocked: true,
     persistCookiesPerSession: true,
     browserPoolOptions: {
@@ -220,7 +221,7 @@ if (input.includeDescription && collectedJobs.length) {
     ],
     launchContext: {
       launchOptions: {
-        headless: true,
+        headless,
       },
     },
     requestHandler: async ({ page, request, response }) => {

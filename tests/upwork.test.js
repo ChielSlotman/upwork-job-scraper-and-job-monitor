@@ -123,7 +123,7 @@ test('normalizeInput defaults to residential proxy and low concurrency for Upwor
 
   assert.equal(input.maxConcurrency, 1);
   assert.deepEqual(input.proxyConfiguration.apifyProxyGroups, ['RESIDENTIAL']);
-  assert.equal(input.proxyConfiguration.apifyProxyCountry, 'US');
+  assert.equal(input.proxyConfiguration.apifyProxyCountry, undefined);
 });
 
 test('finalizeJob returns spreadsheet-ready output with keyword score', () => {

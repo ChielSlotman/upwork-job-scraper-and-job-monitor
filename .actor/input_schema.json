@@ -147,8 +147,7 @@
         "useApifyProxy": true,
         "apifyProxyGroups": [
           "RESIDENTIAL"
-        ],
-        "apifyProxyCountry": "US"
+        ]
       },
       "sectionCaption": "Advanced options",
       "sectionDescription": "Tune crawling behavior only when the default settings do not fit your use case."

@@ -18,8 +18,7 @@
     "useApifyProxy": true,
     "apifyProxyGroups": [
       "RESIDENTIAL"
-    ],
-    "apifyProxyCountry": "US"
+    ]
   },
   "maxConcurrency": 1
 }

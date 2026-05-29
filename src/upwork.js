@@ -13,7 +13,6 @@ export const UPWORK_SEARCH_URL = 'https://www.upwork.com/nx/search/jobs/';
 export const DEFAULT_PROXY_CONFIGURATION = {
   useApifyProxy: true,
   apifyProxyGroups: ['RESIDENTIAL'],
-  apifyProxyCountry: 'US',
 };
 
 const SEARCH_SCROLL_ATTEMPTS = 8;
@@ -94,10 +93,6 @@ function normalizeProxyConfiguration(proxyConfiguration) {
   normalized.apifyProxyGroups = selectedGroups?.length
     ? selectedGroups
     : DEFAULT_PROXY_CONFIGURATION.apifyProxyGroups;
-
-  if (!normalized.apifyProxyCountry && !normalized.countryCode) {
-    normalized.apifyProxyCountry = DEFAULT_PROXY_CONFIGURATION.apifyProxyCountry;
-  }
 
   return normalized;
 }

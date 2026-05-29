@@ -70,8 +70,7 @@ It can collect fields such as:
   "deduplicateResults": true,
   "proxyConfiguration": {
     "useApifyProxy": true,
-    "apifyProxyGroups": ["RESIDENTIAL"],
-    "apifyProxyCountry": "US"
+    "apifyProxyGroups": ["RESIDENTIAL"]
   },
   "maxConcurrency": 1
 }
@@ -144,7 +143,7 @@ You can also run a tiny local smoke test without Apify Proxy:
 npx apify-cli run --purge --input-file examples/local-smoke-input.json
 ```
 
-Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The default input uses Apify Residential proxy with low concurrency because this is much more reliable for Upwork than automatic/datacenter proxy routing. Your Apify account must have residential proxy access and enough proxy traffic available.
+Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The default input uses Apify Residential proxy with low concurrency because this is much more reliable for Upwork than automatic/datacenter proxy routing. Your Apify account must have residential proxy access and enough proxy traffic available. If one country-specific residential pool is blocked, leave the proxy country empty so Apify can rotate across the larger residential pool.
 
 ## Exporting results
 
