@@ -1,18 +1,25 @@
 {
-  "publicationUrls": [
-    "https://astralcodexten.substack.com"
+  "keywords": [
+    "web scraping",
+    "python automation",
+    "n8n",
+    "zapier"
   ],
-  "postUrls": [],
-  "maxPostsPerPublication": 10,
-  "includePostText": true,
-  "includeExcerpt": true,
-  "includeAuthorInfo": true,
-  "includePublicationInfo": true,
-  "dateFrom": null,
-  "dateTo": null,
+  "sourceMode": "auto",
+  "maxResults": 50,
+  "jobType": "both",
+  "experienceLevel": "all",
+  "postedWithin": "last7d",
+  "minBudget": 500,
+  "maxBudget": null,
+  "includeDescription": false,
+  "includeSkills": true,
   "deduplicateResults": true,
-  "maxConcurrency": 5,
-  "requestTimeoutSecs": 30,
-  "maxRetries": 2,
-  "saveDebugHtml": false
+  "proxyConfiguration": {
+    "useApifyProxy": true,
+    "apifyProxyGroups": [
+      "RESIDENTIAL"
+    ]
+  },
+  "maxConcurrency": 1
 }

@@ -1,17 +1,19 @@
 {
-  "publicationUrls": [
-    "https://astralcodexten.substack.com",
-    "https://newsletter.pragmaticengineer.com"
+  "keywords": [
+    "web scraping",
+    "python automation",
+    "n8n",
+    "zapier"
   ],
-  "postUrls": [
-    "https://www.astralcodexten.com/p/book-review-the-dialectical-imagination"
-  ],
-  "maxPostsPerPublication": 25,
-  "includePostText": true,
-  "includeExcerpt": true,
-  "includeAuthorInfo": true,
-  "includePublicationInfo": true,
-  "dateFrom": null,
-  "dateTo": null,
-  "deduplicateResults": true
+  "sourceMode": "officialApi",
+  "maxResults": 50,
+  "jobType": "both",
+  "experienceLevel": "all",
+  "postedWithin": "last7d",
+  "minBudget": 500,
+  "maxBudget": null,
+  "includeDescription": true,
+  "includeSkills": true,
+  "deduplicateResults": true,
+  "upworkApiAccessToken": "YOUR_UPWORK_OAUTH_ACCESS_TOKEN"
 }

@@ -1,142 +1,165 @@
-# Substack Publication and Post Scraper
+# Upwork Job Scraper and Job Monitor
 
-Extract clean public Substack publication, author, and post data for research, content monitoring, competitor analysis, market research, and AI workflows.
+Find and monitor public Upwork job listings by keyword, budget, skill, job type, experience level, and posted time. This Apify Actor returns clean opportunity data that freelancers, agencies, lead generators, and automation builders can review, export, and use in workflows.
 
-This Apify Actor reads public Substack publication pages, public RSS feeds, and public post pages. It does not log in, bypass paywalls, scrape private subscriber-only content, or collect hidden private data. If a post is paid or preview-only, the Actor returns only the publicly visible preview information and marks it as `preview_only`.
+This Actor is designed for job discovery and market research. It does not apply to jobs, scrape private messages, scrape freelancer profiles, collect client emails, or attempt to deanonymize clients.
 
 ## What this Actor does
 
-Substack Publication and Post Scraper lets you enter one or more Substack publication URLs and/or direct post URLs and receive spreadsheet-ready data in the default Apify dataset.
+The Actor searches public Upwork job listings for your keywords, extracts visible job opportunity data, applies your filters, removes duplicates, and saves the results to the default Apify dataset.
 
-It can extract:
+For reliable production runs, use the official Upwork API mode with Upwork OAuth credentials configured in Apify. Browser scraping is still included as a fallback, but Upwork often returns HTTP 403 challenge pages to automated browsers.
 
-- Publication name, URL, description, logo, and visible topic/category
-- Post title, URL, slug, dates, excerpt, image, tags, and public article text
-- Public author name and author profile URL when visible
-- Visible likes and comments counts when readable from the public page
-- Public access status: `public`, `preview_only`, or `unavailable`
-- Source input URL and scrape timestamp for every row
+It can collect fields such as:
+
+- Job title and original Upwork job URL
+- Posted time and scrape time
+- Fixed-price budget or hourly range
+- Experience level, estimated duration, and workload
+- Skills and tags when visible
+- Description snippet and optional full description
+- Public client metadata when visible
+- Proposal-count bucket when visible
+- Source keyword, matched keywords, and a simple relevance score
 
 ## Who it is for
 
-- AI builders collecting public posts for summaries, RAG, and research datasets
-- Content marketers researching newsletters and creators
-- Agencies tracking public competitor content
-- Researchers studying niche writers, media markets, or publication frequency
-- Founders monitoring industry narratives and market trends
-- Newsletter operators analyzing comparable publications
-- Apify, Make, Zapier, n8n, Google Sheets, and API users building automations
+- Freelancers looking for new Upwork opportunities
+- Agencies monitoring client-work demand
+- Sales teams looking for buying intent
+- Automation builders using Apify, Make, Zapier, n8n, or Google Sheets
+- Recruiters and researchers tracking freelance market demand
+- Operators building daily job alert workflows
 
 ## Main use cases
 
-- Extract public posts from one or more Substack publications
-- Build a dataset of public newsletter articles
-- Monitor public posts from specific newsletters
-- Research competitors in a niche
-- Collect public content for AI summarization workflows
-- Export Substack data to CSV, JSON, Excel, or API
-- Track publishing frequency, authors, URLs, and topics
-- Discover useful public authors and publications
+- Find new Upwork jobs by keyword
+- Track high-budget Upwork jobs
+- Monitor niche freelance opportunities
+- Export jobs to CSV, Excel, JSON, or API
+- Send job data into automations and alerts
+- Research demand for specific freelance skills
 
 ## Input
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `publicationUrls` | array | Public Substack publication URLs, for example `https://astralcodexten.substack.com`. The Actor reads public metadata and public RSS feeds. |
-| `postUrls` | array | Optional direct public Substack post URLs. Useful when you already know the exact posts to extract. |
-| `maxPostsPerPublication` | integer | Maximum posts to collect from each publication feed. Default is `25`; maximum is `500`. |
-| `includePostText` | boolean | Include publicly visible article body text or public preview text. Default is `true`. |
-| `includeExcerpt` | boolean | Include public excerpts from RSS or page metadata. Default is `true`. |
-| `includeAuthorInfo` | boolean | Include public author name and URL when visible. Default is `true`. |
-| `includePublicationInfo` | boolean | Include publication name, URL, description, logo, and topic when available. Default is `true`. |
-| `dateFrom` | string or null | Optional start date filter, such as `2026-01-01`. |
-| `dateTo` | string or null | Optional end date filter, such as `2026-12-31`. |
-| `deduplicateResults` | boolean | Remove duplicate posts across publication feeds and direct post URLs. Default is `true`. |
-| `maxConcurrency` | integer | Advanced option for parallel public post page requests. Default is `5`. |
-| `requestTimeoutSecs` | integer | Advanced request timeout. Default is `30`. |
-| `maxRetries` | integer | Advanced retry count for temporary network errors. Default is `2`. |
-| `saveDebugHtml` | boolean | Save fetched post HTML for troubleshooting. Keep disabled for normal runs. |
+| `keywords` | array | Search terms to monitor, for example `web scraping`, `python automation`, `n8n`, or `zapier`. |
+| `sourceMode` | string | `auto`, `officialApi`, or `browser`. Auto uses the official API when credentials are available. |
+| `maxResults` | integer | Maximum number of jobs to return across all keywords. |
+| `minBudget` | integer or null | Optional minimum fixed-price budget in USD. |
+| `maxBudget` | integer or null | Optional maximum fixed-price budget in USD. |
+| `jobType` | string | `fixed`, `hourly`, or `both`. |
+| `experienceLevel` | string | `entry`, `intermediate`, `expert`, or `all`. |
+| `postedWithin` | string | `last24h`, `last7d`, or `all`. |
+| `includeDescription` | boolean | When true, includes full public job descriptions when available. API mode can return this directly; browser mode opens job pages. |
+| `includeSkills` | boolean | Extract public skills and tags when visible. |
+| `deduplicateResults` | boolean | Remove duplicate jobs across keyword searches. |
+| `upworkApiAccessToken` | string | Optional secret Upwork OAuth access token for official API mode. |
+| `upworkApiClientId` | string | Optional secret Upwork OAuth client ID. Can be used with client secret. |
+| `upworkApiClientSecret` | string | Optional secret Upwork OAuth client secret. |
+| `upworkApiRefreshToken` | string | Optional secret refresh token. If provided, the Actor uses the refresh-token grant. |
+| `upworkApiTenantId` | string | Optional Upwork organization or tenant ID for the `X-Upwork-API-TenantId` header. |
+| `proxyConfiguration` | object | Apify Proxy settings. Apify Residential proxy is recommended for Upwork cloud runs. |
 
-At least one `publicationUrls` or `postUrls` entry is required.
+### Recommended source mode
+
+Use `sourceMode: "auto"` for the Store version. Configure one of these credential sets in Apify Actor environment variables so buyers only enter keywords and filters:
+
+- `UPWORK_API_ACCESS_TOKEN`
+- Or `UPWORK_API_CLIENT_ID` and `UPWORK_API_CLIENT_SECRET`
+- Optionally `UPWORK_API_REFRESH_TOKEN`
+- Optionally `UPWORK_API_TENANT_ID`
+
+You can also enter these values in the Actor input. The input fields are marked as Apify secret fields, so Apify encrypts saved values.
+
+The Upwork API key must have access to read marketplace job postings. If official API credentials are missing, `auto` falls back to browser scraping, which may be blocked by Upwork's challenge page.
 
 ## Example input
 
 ```json
 {
-  "publicationUrls": ["https://astralcodexten.substack.com"],
-  "postUrls": [],
-  "maxPostsPerPublication": 10,
-  "includePostText": true,
-  "includeExcerpt": true,
-  "includeAuthorInfo": true,
-  "includePublicationInfo": true,
-  "dateFrom": null,
-  "dateTo": null,
+  "keywords": ["web scraping", "python automation", "n8n", "zapier"],
+  "sourceMode": "auto",
+  "maxResults": 50,
+  "jobType": "both",
+  "experienceLevel": "all",
+  "postedWithin": "last7d",
+  "minBudget": 500,
+  "maxBudget": null,
+  "includeDescription": false,
+  "includeSkills": true,
   "deduplicateResults": true,
-  "maxConcurrency": 5
+  "proxyConfiguration": {
+    "useApifyProxy": true,
+    "apifyProxyGroups": ["RESIDENTIAL"]
+  },
+  "maxConcurrency": 1
 }
 ```
 
-Direct post example:
+Official API example:
 
 ```json
 {
-  "publicationUrls": [],
-  "postUrls": [
-    "https://www.astralcodexten.com/p/book-review-the-dialectical-imagination"
-  ],
-  "maxPostsPerPublication": 1,
-  "includePostText": true,
-  "deduplicateResults": true
+  "keywords": ["web scraping", "python automation"],
+  "sourceMode": "officialApi",
+  "maxResults": 25,
+  "postedWithin": "last7d",
+  "includeDescription": true,
+  "upworkApiAccessToken": "YOUR_UPWORK_OAUTH_ACCESS_TOKEN"
 }
 ```
 
 ## Output
 
-Each dataset item is one public Substack post record.
+Each dataset item is a spreadsheet-ready job record.
 
 ```json
 {
-  "publicationName": "Astral Codex Ten",
-  "publicationUrl": "https://www.astralcodexten.com",
-  "publicationDescription": "P(A|B) = [P(A)*P(B|A)]/P(B), all the rest is commentary.",
-  "publicationLogo": "https://substackcdn.com/image/fetch/...",
-  "publicationTopic": null,
-  "postTitle": "Book Review: The Dialectical Imagination",
-  "postUrl": "https://www.astralcodexten.com/p/book-review-the-dialectical-imagination",
-  "postSlug": "book-review-the-dialectical-imagination",
-  "authorName": "Scott Alexander",
-  "authorUrl": null,
-  "publishedAt": "2026-05-29T15:01:57.000Z",
-  "updatedAt": "2026-05-29T15:01:57.859Z",
-  "excerpt": "...",
-  "publicPostText": "The visible public article text or public preview text...",
-  "isPaidPreview": false,
-  "isPubliclyReadable": true,
-  "accessStatus": "public",
-  "likesCount": 22,
-  "commentsCount": null,
-  "imageUrl": "https://substackcdn.com/image/fetch/...",
-  "tags": [],
-  "sourceInputUrl": "https://astralcodexten.substack.com",
-  "scrapedAt": "2026-05-29T12:00:00.000Z"
+  "jobTitle": "Python web scraping automation specialist",
+  "jobUrl": "https://www.upwork.com/jobs/Python-Scraper_~0123456789abcdef/",
+  "jobId": "~0123456789abcdef",
+  "postedAt": "2026-05-29T09:00:00.000Z",
+  "scrapedAt": "2026-05-29T12:00:00.000Z",
+  "jobType": "fixed",
+  "fixedBudget": 1200,
+  "hourlyMin": null,
+  "hourlyMax": null,
+  "experienceLevel": "intermediate",
+  "estimatedDuration": "1 to 3 months",
+  "workload": "Less than 30 hrs/week",
+  "skills": ["Python", "Web Scraping", "Automation"],
+  "descriptionSnippet": "We need a Python developer to build a reliable scraping workflow for public product data and export clean CSV files.",
+  "fullDescription": null,
+  "clientCountry": "United States",
+  "clientRating": 4.9,
+  "clientSpent": "$10K+ spent",
+  "proposalsCount": "Less than 5",
+  "sourceSearchKeyword": "web scraping",
+  "matchedKeywords": ["web scraping", "python automation"],
+  "relevanceScore": 88
 }
 ```
 
-The Actor also writes `RUN_SUMMARY` to the default key-value store with counts, warnings, and status. Possible statuses include:
+The Actor also writes `RUN_SUMMARY` to the default key-value store. This is useful for monitoring scheduled runs because it includes `status`, counts, and warnings. Possible statuses include:
 
-- `ok`: results were collected without warnings
-- `partial`: results were collected, but some posts were preview-only, unavailable, or had warnings
-- `no_results`: the run completed but no matching posts were found
-- `failed_or_empty`: publication or post requests failed and no dataset items were produced
+- `ok`: jobs were collected without warnings
+- `partial`: jobs were collected, but some searches had warnings
+- `no_results`: the run completed but no matching jobs were found
+- `blocked`: Upwork returned an access challenge or HTTP 403/429
+- `empty_pages`: pages loaded, but no job cards were detected
+- `failed_requests`: all search requests failed before extraction
+
+Blocked or empty runs do not create fake dataset rows. Check `RUN_SUMMARY` and the run log for the reason.
 
 ## How to run
 
 ### On Apify
 
 1. Open the Actor in Apify Console.
-2. Enter one or more public Substack publication URLs or direct post URLs.
-3. Choose `maxPostsPerPublication` and optional date filters.
+2. Enter one or more keywords.
+3. Choose `maxResults` and optional filters.
 4. Run the Actor.
 5. Open the Dataset tab to view, filter, or export results.
 
@@ -147,11 +170,15 @@ npm install
 npm start
 ```
 
-For local Apify SDK runs, create `storage/key_value_stores/default/INPUT.json` or run with the Apify CLI:
+For local runs, Apify SDK reads input from local storage. You can create `storage/key_value_stores/default/INPUT.json` using `examples/input.json`.
+
+You can also run a tiny local smoke test without Apify Proxy:
 
 ```bash
 npx apify-cli run --purge --input-file examples/local-smoke-input.json
 ```
+
+Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The recommended launch setup is official API mode with Upwork OAuth credentials. Browser fallback uses Apify Residential proxy with low concurrency, but it should not be treated as the primary production path. Your Apify account must have residential proxy access and enough proxy traffic available if you use browser mode.
 
 ## Exporting results
 
@@ -164,125 +191,96 @@ Apify datasets can be exported as:
 - XML
 - RSS
 
-From Apify Console, open a run, go to Dataset, and choose Export. You can also fetch results through the Dataset API.
+From Apify Console, open the Actor run, go to Dataset, and choose Export. You can also fetch results through the Dataset API.
 
 ## API usage
 
 Run the Actor through the Apify API:
 
 ```bash
-curl "https://api.apify.com/v2/acts/YOUR_USERNAME~substack-publication-and-post-scraper/runs?token=YOUR_APIFY_TOKEN" \
+curl "https://api.apify.com/v2/acts/YOUR_USERNAME~upwork-job-scraper-and-job-monitor/runs?token=YOUR_APIFY_TOKEN" \
   -H "Content-Type: application/json" \
   -d @examples/input.json
 ```
 
-After the run finishes, read dataset items:
+After the run finishes, read the dataset items:
 
 ```bash
 curl "https://api.apify.com/v2/datasets/DATASET_ID/items?format=json&clean=true&token=YOUR_APIFY_TOKEN"
 ```
 
-Read the run summary:
-
-```bash
-curl "https://api.apify.com/v2/key-value-stores/STORE_ID/records/RUN_SUMMARY?token=YOUR_APIFY_TOKEN"
-```
-
 ## Make, Zapier, n8n, and Google Sheets
 
-This Actor is built for automation workflows:
+This Actor works well in no-code and automation workflows:
 
-- Schedule it in Apify to monitor public newsletters daily or hourly.
+- Schedule the Actor to run daily or hourly in Apify.
 - Use Apify integrations to trigger Make, Zapier, or n8n after a run finishes.
 - Export the default dataset to Google Sheets.
-- Filter by `publicationName`, `authorName`, `publishedAt`, `accessStatus`, `tags`, or `sourceInputUrl`.
-- Send new public posts to Slack, email, Airtable, Notion, a CRM, or an AI summarization pipeline.
+- Filter by `relevanceScore`, `fixedBudget`, `hourlyMin`, `postedAt`, or `sourceSearchKeyword`.
+- Send high-fit jobs to Slack, email, Airtable, Notion, a CRM, or a review queue.
 
-For monitoring, keep `deduplicateResults` enabled and use `dateFrom`/`dateTo` or a scheduled run window.
-
-## Responsible use
-
-Use this Actor only for public research, content monitoring, and analysis of publicly visible Substack pages. Do not use it to bypass paywalls, access paid subscriber-only content, collect private user data, scrape login-only pages, or violate Substack's terms or any creator's rights.
-
-The Actor does not use login sessions. It reads public RSS feeds and public post pages. If a paid post exposes only a preview, the Actor returns only that public preview and marks `accessStatus` as `preview_only`.
+For daily monitoring, set `postedWithin` to `last24h`, keep `deduplicateResults` enabled, and schedule the Actor in Apify.
 
 ## Pricing suggestion
 
-Suggested commercial Store pricing:
+Suggested commercial pricing:
 
-- Pay per result: `$1.50` to `$3.00` per 1,000 public posts scraped
-- Alternative event pricing: `$0.002` to `$0.005` per public post result
+- Pay per result: `$1.50` to `$3.00` per 1,000 jobs scraped.
+- Alternative: `$0.01` per matched job result.
 
-Pay per result is simple for buyers because value maps directly to usable post records. Keep `includePostText` available by default for AI workflows, and use moderate `maxPostsPerPublication` values for efficient runs.
+For the first Store version, pay-per-result is simpler for buyers because value maps directly to usable job opportunities. Keep `includeDescription` off by default because opening every job page increases compute usage.
 
 ## Limitations
 
-- The Actor only collects data visible on public pages or public RSS feeds.
-- It does not access paid subscriber-only content, private content, drafts, comments behind login, or hidden private APIs.
-- RSS feeds may include only recent posts, depending on the publication.
-- Some fields are `null` when Substack or the publication does not expose them publicly.
-- Likes and comments counts are returned only when visible and parseable from the public page.
-- Custom-domain Substacks are supported when they expose a standard public RSS feed and public post pages.
-- Very large `publicPostText` fields can make CSV/Excel exports heavier.
+- Upwork may show access challenges or change page structure. The Actor detects challenge pages and writes useful logs.
+- Upwork is strict about automated browser access. For production monitoring, use official API mode where possible. If you use browser mode, use Apify Residential proxy, keep concurrency low, and expect occasional blocked sessions.
+- Official API mode requires valid Upwork OAuth credentials and the required Upwork API permissions.
+- Some fields are only returned when publicly visible on the listing or job page.
+- `includeDescription` is slower because it opens each job page.
+- Posted-time filters depend on visible text such as `Posted 2 hours ago`.
+- This Actor does not replace Upwork's own search, saved searches, or account features.
+
+## Responsible use
+
+Use this Actor only for discovering and reviewing public job opportunities. Do not use it to spam clients, automate proposals, scrape private messages, scrape freelancer profiles, collect emails, bypass Upwork account controls, or violate Upwork's terms. Always click through to Upwork and apply manually through Upwork's normal workflow.
 
 ## FAQ
 
-### Does this Actor bypass Substack paywalls?
+### Does this Actor auto-apply to jobs?
 
-No. It only reads public pages and public RSS feeds. Paid or preview-only posts are marked as `preview_only`, and only visible preview text is returned.
+No. It only returns public job opportunity data and the original Upwork URL.
 
-### Does it require a Substack login?
+### Does it scrape freelancer profiles?
 
-No. The Actor does not use login sessions, cookies, or subscriber accounts.
+No. The scope is public job listings and public job post pages only.
 
-### Can I scrape direct post URLs?
+### Can I monitor jobs every day?
 
-Yes. Put direct public post URLs in `postUrls`. You can use `publicationUrls`, `postUrls`, or both.
+Yes. Create an Apify schedule and use `postedWithin: "last24h"` for daily monitoring.
 
 ### Why are some fields null?
 
-Substack does not expose every field on every public page. The Actor returns `null` instead of guessing.
-
-### Can I use this for AI summaries?
-
-Yes. Enable `includePostText` and send `publicPostText`, `postTitle`, `authorName`, and `postUrl` into your AI workflow.
+Upwork does not show every field on every listing. The Actor returns `null` when a field is unavailable instead of inventing data.
 
 ### Can I export to Google Sheets?
 
-Yes. Use Apify dataset export, Apify integrations, Make, Zapier, n8n, or the Apify API.
+Yes. Use Apify's dataset export or Apify integrations to send results to Google Sheets.
 
-### How do I monitor new posts?
+### What should I do if Upwork returns a challenge page?
 
-Create an Apify schedule and set a date filter or process only new dataset rows in your downstream automation. A future version can add stateful "new posts only" mode.
+Use Apify Residential proxy, keep `maxConcurrency` at `1`, keep runs moderate, and try again later. Enable `saveDebugHtml` only when troubleshooting.
 
 ## Version 2 ideas
 
-- Scheduled monitoring with "return only new posts since last run"
-- Webhook alert templates
-- RSS-style monitoring output
-- AI topic classification
-- AI summary field
-- Author discovery
-- Newsletter discovery by topic
-- Keyword filtering inside public posts
-- Google Sheets export preset
-- Competitor newsletter tracker
-- Substack trend monitor
-
-## Launch checklist
-
-- Confirm Actor name: `substack-publication-and-post-scraper`
-- Confirm Store title: `Substack Publication and Post Scraper`
-- Run a smoke test with `examples/local-smoke-input.json`
-- Verify dataset columns in the Apify Output tab
-- Export CSV, JSON, and Excel to confirm spreadsheet-ready fields
-- Test publication URL input and direct post URL input
-- Test `includePostText: true` and `includePostText: false`
-- Test date filters
-- Review `RUN_SUMMARY` after a successful run
-- Review responsible-use copy before publishing
-- Add paid pricing in Apify Console
-- Publish as a commercial Apify Store Actor
+- Stateful monitoring that returns only jobs not seen in previous runs
+- Webhook alerts
+- Slack, Discord, Telegram, and email alert templates
+- AI job fit scoring
+- High-budget job finder mode
+- Low-competition job finder mode
+- Skill demand analysis
+- Saved search presets
+- Client quality scoring from public fields
 
 ## Development
 
@@ -292,4 +290,4 @@ npm test
 npm run lint
 ```
 
-The parser has unit tests for input normalization, RSS parsing, public post extraction, paid-preview classification, date filtering, and output shaping.
+The parser has unit tests so basic extraction behavior can be validated without making live Upwork requests.

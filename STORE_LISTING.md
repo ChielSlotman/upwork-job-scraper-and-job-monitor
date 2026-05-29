@@ -2,125 +2,117 @@
 
 ## Store title
 
-Substack Publication and Post Scraper
+Upwork Job Scraper and Job Monitor
 
 ## Subtitle
 
-Extract public Substack posts, authors, publication details, dates, URLs, excerpts, and article text for research and AI workflows.
+Find and monitor Upwork jobs by keyword, budget, skill, experience level, and posted time.
 
 ## SEO title
 
-Substack Publication and Post Scraper
+Upwork Job Scraper and Job Monitor - Export Freelance Jobs from Upwork
 
 ## SEO description
 
-Scrape public Substack posts, authors, publication data, dates, excerpts, URLs, and article text. Export newsletter data for research and AI workflows.
+Scrape and monitor Upwork job listings by keyword, budget, skills, job type, experience level, and posted time. Export freelance opportunities for research, alerts, and workflows.
 
 ## Short marketing description
 
-Extract clean public Substack publication and post data for content research, competitor tracking, AI summaries, and newsletter analysis.
+Find fresh Upwork job opportunities faster. Enter keywords such as web scraping, python automation, n8n, or zapier, apply budget and experience filters, and export clean job data to CSV, Excel, JSON, Google Sheets, Make, Zapier, n8n, or your API workflow.
 
 ## Long marketing description
 
-Substack Publication and Post Scraper helps researchers, AI builders, marketers, agencies, founders, and newsletter operators collect structured data from public Substack publications and posts without manually opening every newsletter.
+Upwork Job Scraper and Job Monitor helps freelancers, agencies, lead generators, and automation builders discover relevant public Upwork jobs without manually refreshing search pages. The Actor searches public Upwork job listings, extracts clean opportunity data, filters by budget, job type, experience level, and posted time, removes duplicates, and returns spreadsheet-ready results.
 
-Enter one or more public Substack publication URLs or direct post URLs. The Actor reads public publication pages, public RSS feeds, and public post pages, then returns spreadsheet-ready data including publication metadata, post titles, URLs, slugs, authors, dates, excerpts, images, tags, visible engagement counts, and optional public article text.
+For launch reliability, the Actor supports an official Upwork API mode with encrypted OAuth credentials. Browser scraping is available as a fallback, but Upwork can return HTTP 403 challenge pages to automated browsers.
 
-This Actor is designed as a public research and content monitoring tool. It does not log in, bypass paywalls, scrape subscriber-only content, collect private user data, or access hidden private information. Paid or preview-only posts are clearly marked as `preview_only`, and only visible preview content is returned.
+Use it to build a daily Upwork job alert workflow, track high-budget projects, monitor niche freelance demand, qualify opportunities before spending Connects, or feed structured freelance-market data into your internal tools.
 
-Use it to build public newsletter datasets, monitor competitor publications, power AI summarization workflows, track publishing frequency, export data to CSV/Excel/JSON, or connect public Substack content to Make, Zapier, n8n, Google Sheets, and custom APIs.
+This Actor is positioned as a job discovery and monitoring tool. It does not auto-apply, scrape private messages, scrape freelancer profiles, collect client emails, or bypass Upwork workflows.
 
 ## Suggested categories
 
-- Marketing
-- Social media
-- Content marketing
-- News
-- AI
-- Research
+- Jobs
+- Lead generation
 - Automation
+- Market research
+- Business
 
 ## Suggested tags
 
-- substack
-- newsletter
-- newsletter scraper
-- substack scraper
-- content research
-- competitor research
-- market research
-- public posts
-- ai workflows
-- article text
-- newsletter monitoring
-- make
+- upwork
+- freelance jobs
+- job scraper
+- job monitor
+- lead generation
+- freelance leads
+- remote jobs
+- agency leads
+- apify automation
 - zapier
 - n8n
+- make
 - google sheets
-- apify api
 
 ## Main value propositions
 
-- Extract public Substack publication and post data in minutes.
-- Collect public article text for AI summaries and research workflows.
-- Support publication URLs, direct post URLs, or both.
-- Mark posts as public, preview-only, or unavailable.
-- Avoid duplicate posts across multiple inputs.
-- Export clean spreadsheet-ready data to CSV, Excel, JSON, or API.
-- Use public RSS feeds and public post pages without login sessions.
+- Discover relevant Upwork jobs by keyword and skill.
+- Use official Upwork API mode for reliable production runs.
+- Monitor fresh opportunities with posted-time filters.
+- Export clean job data to CSV, Excel, JSON, Google Sheets, or API.
+- Filter by fixed budget, job type, and experience level.
+- Avoid duplicate jobs across multiple keyword searches.
+- Keep users in control by linking back to the original Upwork job post.
 
 ## Example use cases
 
-- AI builders collect public newsletter posts for summarization.
-- Marketers research competing newsletters in a niche.
-- Agencies monitor public client and competitor content.
-- Researchers study public authors, topics, and publishing frequency.
-- Founders track market narratives across influential writers.
-- Newsletter operators analyze similar publications.
-- Operations teams send new public posts to Slack, Notion, Airtable, or Google Sheets.
+- A freelancer monitors `web scraping` and `python automation` jobs every morning.
+- An agency tracks high-budget `Shopify` and `Zapier` projects.
+- A sales team watches for companies hiring automation help.
+- A researcher analyzes demand for AI, data, and workflow automation skills.
+- An automation builder sends new matching jobs to Slack or a CRM.
 
 ## Suggested pricing
 
 Start with pay per result:
 
-- `$1.50` to `$3.00` per 1,000 public posts scraped
+- `$1.50` to `$3.00` per 1,000 jobs scraped
 
-Alternative event pricing:
+Alternative pricing:
 
-- `$0.002` to `$0.005` per public post result
+- `$0.01` per matched job result
 
-Pay per result is easy for buyers to understand and maps directly to usable dataset rows. The Actor uses static HTTP requests instead of browser automation, which helps keep compute costs low.
+Pay per result is easier to understand for buyers and protects margins when the Actor runs efficiently with `includeDescription` disabled by default.
 
 ## Responsible use note
 
-This Actor extracts publicly visible Substack publication and post information for research, content monitoring, and analysis. It must not be used to bypass paywalls, scrape paid subscriber-only content, collect private user data, access login-only pages, or violate Substack's terms or creator rights. Paid or preview-only posts are returned only with publicly visible preview data and are marked as `preview_only`.
+This Actor extracts publicly visible job listing information for job discovery, monitoring, and market research. It must not be used for spam, auto-applying, scraping private messages, scraping freelancer profiles, collecting client emails, deanonymizing clients, or bypassing Upwork's platform rules. Users should review results and apply manually through Upwork.
 
 ## Launch checklist
 
-- Confirm Actor slug: `substack-publication-and-post-scraper`.
-- Confirm title, subtitle, SEO title, and SEO description.
-- Run a local smoke test with `examples/local-smoke-input.json`.
-- Run an Apify cloud test with one public publication URL and `maxPostsPerPublication: 5`.
-- Test direct `postUrls` input.
-- Test `includePostText: true` and `includePostText: false`.
-- Test date filters.
-- Verify dataset schema and table view in Apify Console.
-- Export CSV, JSON, and Excel to confirm spreadsheet-ready output.
-- Confirm `RUN_SUMMARY` appears in the key-value store.
-- Review responsible-use copy in README and Store listing.
-- Add paid pricing.
-- Publish as a commercial Apify Store Actor.
+- Confirm Actor name, title, and owner username in Apify Console.
+- Add Upwork API credentials to Actor environment variables or secret input fields.
+- Run an official API smoke test with `keywords: ["web scraping"]`, `sourceMode: "officialApi"`, and `maxResults: 10`.
+- Verify dataset columns render in the Output tab.
+- Export CSV and JSON to confirm spreadsheet-ready formatting.
+- Test with `includeDescription: false` and `includeDescription: true`.
+- Test fixed-price filtering with `minBudget`.
+- Test hourly-only filtering with `jobType: "hourly"`.
+- Confirm Apify Proxy is enabled for cloud runs.
+- Keep browser mode as fallback only because Upwork can block automated browser sessions.
+- Review README and responsible use language.
+- Add Store pricing and usage limits.
+- Publish as a paid Actor.
+- Create one scheduled monitoring example for marketing screenshots.
 
 ## Version 2 roadmap
 
-- Scheduled monitoring with only-new-posts mode.
-- Webhook alerts for new public posts.
-- RSS-style monitoring output.
-- AI topic classification.
-- AI summary field.
-- Author discovery.
-- Newsletter discovery by topic.
-- Keyword filtering inside posts.
-- Google Sheets export preset.
-- Competitor newsletter tracker.
-- Substack trend monitor.
+- Return only new jobs since the previous scheduled run.
+- Add webhook alert payloads.
+- Add Slack, Discord, Telegram, and email alert examples.
+- Add AI job fit scoring based on user profile text.
+- Add high-budget job finder mode.
+- Add low-competition job finder mode.
+- Add skill demand analysis and trend summaries.
+- Add saved search presets for common freelance niches.
+- Add richer public client quality scoring.
