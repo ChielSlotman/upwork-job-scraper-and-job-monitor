@@ -1,0 +1,12 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Upwork job results",
+  "properties": {
+    "jobs": {
+      "type": "string",
+      "title": "Jobs",
+      "description": "Clean public Upwork job listings matching the input keywords and filters.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}
