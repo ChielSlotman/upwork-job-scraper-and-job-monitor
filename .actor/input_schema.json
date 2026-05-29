@@ -26,6 +26,24 @@
         "minLength": 1
       }
     },
+    "sourceMode": {
+      "title": "Data source",
+      "type": "string",
+      "description": "Choose how the Actor gets Upwork jobs. Auto uses the official Upwork API when credentials are configured, then falls back to public browser scraping. Official API is recommended for Store launch reliability.",
+      "editor": "select",
+      "default": "auto",
+      "prefill": "auto",
+      "enum": [
+        "auto",
+        "officialApi",
+        "browser"
+      ],
+      "enumTitles": [
+        "Auto - official API when available",
+        "Official Upwork API",
+        "Browser scraping fallback"
+      ]
+    },
     "maxResults": {
       "title": "Maximum jobs",
       "type": "integer",
@@ -114,7 +132,7 @@
     "includeDescription": {
       "title": "Include full description",
       "type": "boolean",
-      "description": "Open each public job page and try to include the full job description. This is slower and may use more compute units.",
+      "description": "Include full public job descriptions when available. Official API mode can return this directly; browser mode opens each public job page and may use more compute.",
       "editor": "checkbox",
       "default": false,
       "prefill": false,
@@ -137,6 +155,42 @@
       "default": true,
       "prefill": true,
       "example": true
+    },
+    "upworkApiAccessToken": {
+      "title": "Upwork API access token",
+      "type": "string",
+      "description": "Optional encrypted Upwork OAuth access token. Leave empty if you configured UPWORK_API_ACCESS_TOKEN as an Actor environment variable or want to use browser fallback.",
+      "editor": "textfield",
+      "isSecret": true,
+      "sectionCaption": "Official API access",
+      "sectionDescription": "Recommended for reliable Store usage. You can provide an access token, or client credentials below. For a public Actor, configure these as Actor environment variables so buyers only enter search filters."
+    },
+    "upworkApiClientId": {
+      "title": "Upwork API client ID",
+      "type": "string",
+      "description": "Optional encrypted Upwork OAuth client ID. Used with client secret to request an access token.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "upworkApiClientSecret": {
+      "title": "Upwork API client secret",
+      "type": "string",
+      "description": "Optional encrypted Upwork OAuth client secret. Used with client ID to request an access token.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "upworkApiRefreshToken": {
+      "title": "Upwork API refresh token",
+      "type": "string",
+      "description": "Optional encrypted Upwork OAuth refresh token. If provided with client ID and secret, the Actor uses the refresh-token grant instead of client credentials.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "upworkApiTenantId": {
+      "title": "Upwork API tenant ID",
+      "type": "string",
+      "description": "Optional Upwork organization or tenant ID for the X-Upwork-API-TenantId header. Leave empty unless your API key requires a specific organization context.",
+      "editor": "textfield"
     },
     "proxyConfiguration": {
       "title": "Proxy configuration",

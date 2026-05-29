@@ -5,21 +5,15 @@
     "n8n",
     "zapier"
   ],
-  "sourceMode": "auto",
+  "sourceMode": "officialApi",
   "maxResults": 50,
   "jobType": "both",
   "experienceLevel": "all",
   "postedWithin": "last7d",
   "minBudget": 500,
   "maxBudget": null,
-  "includeDescription": false,
+  "includeDescription": true,
   "includeSkills": true,
   "deduplicateResults": true,
-  "proxyConfiguration": {
-    "useApifyProxy": true,
-    "apifyProxyGroups": [
-      "RESIDENTIAL"
-    ]
-  },
-  "maxConcurrency": 1
+  "upworkApiAccessToken": "YOUR_UPWORK_OAUTH_ACCESS_TOKEN"
 }

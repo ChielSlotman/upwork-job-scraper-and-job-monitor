@@ -57,6 +57,7 @@ export function normalizeInput(input = {}) {
 
   return {
     keywords,
+    sourceMode: ['auto', 'officialApi', 'browser'].includes(input.sourceMode) ? input.sourceMode : 'auto',
     maxResults: clampInteger(input.maxResults, 50, 1, 1000),
     minBudget: Number.isFinite(minBudget) ? minBudget : null,
     maxBudget: Number.isFinite(maxBudget) ? maxBudget : null,
@@ -72,7 +73,17 @@ export function normalizeInput(input = {}) {
     maxConcurrency: clampInteger(input.maxConcurrency, 1, 1, 3),
     requestTimeoutSecs: clampInteger(input.requestTimeoutSecs, 60, 15, 180),
     saveDebugHtml: Boolean(input.saveDebugHtml),
+    upworkApiAccessToken: cleanOptionalString(input.upworkApiAccessToken),
+    upworkApiClientId: cleanOptionalString(input.upworkApiClientId),
+    upworkApiClientSecret: cleanOptionalString(input.upworkApiClientSecret),
+    upworkApiRefreshToken: cleanOptionalString(input.upworkApiRefreshToken),
+    upworkApiTenantId: cleanOptionalString(input.upworkApiTenantId),
   };
+}
+
+function cleanOptionalString(value) {
+  const normalized = compactText(value);
+  return normalized || null;
 }
 
 function normalizeProxyConfiguration(proxyConfiguration) {

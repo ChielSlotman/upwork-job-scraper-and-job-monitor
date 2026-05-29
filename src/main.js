@@ -1,6 +1,10 @@
 import { Actor } from 'apify';
 import { PlaywrightCrawler, log } from '@crawlee/playwright';
 import {
+  collectJobsFromOfficialApi,
+  hasUpworkApiCredentials,
+} from './upwork-api.js';
+import {
   buildSearchUrl,
   DEFAULT_PROXY_CONFIGURATION,
   detectUpworkChallenge,
@@ -18,11 +22,9 @@ await Actor.init();
 const startedAt = new Date();
 const rawInput = await Actor.getInput();
 const input = normalizeInput(rawInput || {});
-const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfiguration);
-const headless = !Actor.isAtHome();
-const isUsingDefaultResidentialProxy = input.proxyConfiguration?.useApifyProxy !== false
-  && (input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [])
-    .includes('RESIDENTIAL');
+const hasApiCredentials = hasUpworkApiCredentials(input);
+const usingOfficialApi = input.sourceMode === 'officialApi'
+  || (input.sourceMode === 'auto' && hasApiCredentials);
 
 const scrapedAt = new Date().toISOString();
 const collectedJobs = [];
@@ -44,18 +46,68 @@ const stats = {
   emptySearchPages: 0,
   noResultSearchPages: 0,
   warnings: [],
+  sourceMode: usingOfficialApi ? 'officialApi' : 'browser',
+  apiRequests: 0,
 };
 
 log.info('Starting Upwork job discovery run', {
+  sourceMode: stats.sourceMode,
   keywords: input.keywords,
   maxResults: input.maxResults,
   jobType: input.jobType,
   experienceLevel: input.experienceLevel,
   postedWithin: input.postedWithin,
   includeDescription: input.includeDescription,
-  proxyGroups: input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [],
-  proxyCountry: input.proxyConfiguration?.apifyProxyCountry || input.proxyConfiguration?.countryCode || null,
+  hasApiCredentials,
+  proxyGroups: usingOfficialApi ? [] : (input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || []),
+  proxyCountry: usingOfficialApi ? null : (input.proxyConfiguration?.apifyProxyCountry || input.proxyConfiguration?.countryCode || null),
 });
+
+if (input.sourceMode === 'officialApi' && !hasApiCredentials) {
+  throw new Error('Official API mode was selected, but no Upwork API credentials were provided. Add upworkApiAccessToken, or upworkApiClientId and upworkApiClientSecret, or set the matching UPWORK_API_* Actor environment variables.');
+}
+
+if (usingOfficialApi) {
+  log.info('Using Upwork official API source');
+
+  const apiResult = await collectJobsFromOfficialApi(input, {
+    scrapedAt,
+    log,
+    onRequest: () => {
+      stats.apiRequests += 1;
+    },
+  });
+
+  stats.searchPagesProcessed = input.keywords.length;
+  stats.jobsExtractedBeforeFilters = apiResult.jobs.length;
+
+  for (const rawJob of apiResult.jobs) {
+    if (collectedJobs.length >= input.maxResults) break;
+
+    if (!jobMatchesFilters(rawJob, input)) {
+      stats.jobsFilteredOut += 1;
+      continue;
+    }
+
+    const key = jobDedupeKey(rawJob);
+    if (input.deduplicateResults && seenKeys.has(key)) {
+      stats.duplicateJobsSkipped += 1;
+      continue;
+    }
+
+    if (input.deduplicateResults) seenKeys.add(key);
+    collectedJobs.push(rawJob);
+  }
+
+  log.info(`Collected ${collectedJobs.length}/${input.maxResults} matching jobs from the official API`);
+}
+
+if (!usingOfficialApi) {
+const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfiguration);
+const headless = !Actor.isAtHome();
+const isUsingDefaultResidentialProxy = input.proxyConfiguration?.useApifyProxy !== false
+  && (input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [])
+    .includes('RESIDENTIAL');
 
 if (isUsingDefaultResidentialProxy) {
   log.info('Using Apify Residential proxy for Upwork access', {
@@ -275,6 +327,7 @@ if (input.includeDescription && collectedJobs.length) {
   });
 
   await detailCrawler.run(detailRequests);
+}
 }
 
 const finalJobs = collectedJobs

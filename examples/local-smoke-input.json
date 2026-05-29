@@ -2,6 +2,7 @@
   "keywords": [
     "web scraping"
   ],
+  "sourceMode": "browser",
   "maxResults": 1,
   "jobType": "both",
   "experienceLevel": "all",

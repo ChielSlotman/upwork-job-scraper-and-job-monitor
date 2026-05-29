@@ -6,7 +6,9 @@ This Actor is designed for job discovery and market research. It does not apply 
 
 ## What this Actor does
 
-The Actor opens public Upwork job search pages for your keywords, extracts visible job opportunity data, applies your filters, removes duplicates, and saves the results to the default Apify dataset.
+The Actor searches public Upwork job listings for your keywords, extracts visible job opportunity data, applies your filters, removes duplicates, and saves the results to the default Apify dataset.
+
+For reliable production runs, use the official Upwork API mode with Upwork OAuth credentials configured in Apify. Browser scraping is still included as a fallback, but Upwork often returns HTTP 403 challenge pages to automated browsers.
 
 It can collect fields such as:
 
@@ -43,22 +45,42 @@ It can collect fields such as:
 | Field | Type | Description |
 | --- | --- | --- |
 | `keywords` | array | Search terms to monitor, for example `web scraping`, `python automation`, `n8n`, or `zapier`. |
+| `sourceMode` | string | `auto`, `officialApi`, or `browser`. Auto uses the official API when credentials are available. |
 | `maxResults` | integer | Maximum number of jobs to return across all keywords. |
 | `minBudget` | integer or null | Optional minimum fixed-price budget in USD. |
 | `maxBudget` | integer or null | Optional maximum fixed-price budget in USD. |
 | `jobType` | string | `fixed`, `hourly`, or `both`. |
 | `experienceLevel` | string | `entry`, `intermediate`, `expert`, or `all`. |
 | `postedWithin` | string | `last24h`, `last7d`, or `all`. |
-| `includeDescription` | boolean | When true, opens job pages and attempts to extract the full public description. |
+| `includeDescription` | boolean | When true, includes full public job descriptions when available. API mode can return this directly; browser mode opens job pages. |
 | `includeSkills` | boolean | Extract public skills and tags when visible. |
 | `deduplicateResults` | boolean | Remove duplicate jobs across keyword searches. |
+| `upworkApiAccessToken` | string | Optional secret Upwork OAuth access token for official API mode. |
+| `upworkApiClientId` | string | Optional secret Upwork OAuth client ID. Can be used with client secret. |
+| `upworkApiClientSecret` | string | Optional secret Upwork OAuth client secret. |
+| `upworkApiRefreshToken` | string | Optional secret refresh token. If provided, the Actor uses the refresh-token grant. |
+| `upworkApiTenantId` | string | Optional Upwork organization or tenant ID for the `X-Upwork-API-TenantId` header. |
 | `proxyConfiguration` | object | Apify Proxy settings. Apify Residential proxy is recommended for Upwork cloud runs. |
+
+### Recommended source mode
+
+Use `sourceMode: "auto"` for the Store version. Configure one of these credential sets in Apify Actor environment variables so buyers only enter keywords and filters:
+
+- `UPWORK_API_ACCESS_TOKEN`
+- Or `UPWORK_API_CLIENT_ID` and `UPWORK_API_CLIENT_SECRET`
+- Optionally `UPWORK_API_REFRESH_TOKEN`
+- Optionally `UPWORK_API_TENANT_ID`
+
+You can also enter these values in the Actor input. The input fields are marked as Apify secret fields, so Apify encrypts saved values.
+
+The Upwork API key must have access to read marketplace job postings. If official API credentials are missing, `auto` falls back to browser scraping, which may be blocked by Upwork's challenge page.
 
 ## Example input
 
 ```json
 {
   "keywords": ["web scraping", "python automation", "n8n", "zapier"],
+  "sourceMode": "auto",
   "maxResults": 50,
   "jobType": "both",
   "experienceLevel": "all",
@@ -73,6 +95,19 @@ It can collect fields such as:
     "apifyProxyGroups": ["RESIDENTIAL"]
   },
   "maxConcurrency": 1
+}
+```
+
+Official API example:
+
+```json
+{
+  "keywords": ["web scraping", "python automation"],
+  "sourceMode": "officialApi",
+  "maxResults": 25,
+  "postedWithin": "last7d",
+  "includeDescription": true,
+  "upworkApiAccessToken": "YOUR_UPWORK_OAUTH_ACCESS_TOKEN"
 }
 ```
 
@@ -143,7 +178,7 @@ You can also run a tiny local smoke test without Apify Proxy:
 npx apify-cli run --purge --input-file examples/local-smoke-input.json
 ```
 
-Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The default input uses Apify Residential proxy with low concurrency because this is much more reliable for Upwork than automatic/datacenter proxy routing. Your Apify account must have residential proxy access and enough proxy traffic available. If one country-specific residential pool is blocked, leave the proxy country empty so Apify can rotate across the larger residential pool.
+Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The recommended launch setup is official API mode with Upwork OAuth credentials. Browser fallback uses Apify Residential proxy with low concurrency, but it should not be treated as the primary production path. Your Apify account must have residential proxy access and enough proxy traffic available if you use browser mode.
 
 ## Exporting results
 
@@ -198,7 +233,8 @@ For the first Store version, pay-per-result is simpler for buyers because value 
 ## Limitations
 
 - Upwork may show access challenges or change page structure. The Actor detects challenge pages and writes useful logs.
-- Upwork is strict about automated access. For production monitoring, use Apify Residential proxy, keep concurrency low, and expect occasional blocked sessions to be retried.
+- Upwork is strict about automated browser access. For production monitoring, use official API mode where possible. If you use browser mode, use Apify Residential proxy, keep concurrency low, and expect occasional blocked sessions.
+- Official API mode requires valid Upwork OAuth credentials and the required Upwork API permissions.
 - Some fields are only returned when publicly visible on the listing or job page.
 - `includeDescription` is slower because it opens each job page.
 - Posted-time filters depend on visible text such as `Posted 2 hours ago`.

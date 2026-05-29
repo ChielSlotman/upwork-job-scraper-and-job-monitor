@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  buildPublicJobSearchFilter,
+  hasUpworkApiCredentials,
+  mapPublicApiJob,
+} from '../src/upwork-api.js';
+import {
   buildSearchUrl,
   extractJobIdFromUrl,
   finalizeJob,
@@ -124,6 +129,83 @@ test('normalizeInput defaults to residential proxy and low concurrency for Upwor
   assert.equal(input.maxConcurrency, 1);
   assert.deepEqual(input.proxyConfiguration.apifyProxyGroups, ['RESIDENTIAL']);
   assert.equal(input.proxyConfiguration.apifyProxyCountry, undefined);
+});
+
+test('normalizeInput keeps official API mode and secret fields', () => {
+  const input = normalizeInput({
+    keywords: ['web scraping'],
+    maxResults: 10,
+    sourceMode: 'officialApi',
+    upworkApiAccessToken: '  token-value  ',
+    upworkApiTenantId: '  tenant-123  ',
+  });
+
+  assert.equal(input.sourceMode, 'officialApi');
+  assert.equal(input.upworkApiAccessToken, 'token-value');
+  assert.equal(input.upworkApiTenantId, 'tenant-123');
+  assert.equal(hasUpworkApiCredentials(input, {}), true);
+});
+
+test('buildPublicJobSearchFilter uses official Upwork API pagination and posted filters', () => {
+  const input = normalizeInput({
+    keywords: ['python automation'],
+    maxResults: 10,
+    postedWithin: 'last7d',
+  });
+  const filter = buildPublicJobSearchFilter(input, 'python automation', {
+    pageOffset: 20,
+    pageSize: 10,
+  });
+
+  assert.deepEqual(filter, {
+    searchExpression_eq: 'python automation',
+    daysPosted_eq: 7,
+    pagination: {
+      pageOffset: 20,
+      pageSize: 10,
+    },
+  });
+});
+
+test('mapPublicApiJob converts Upwork GraphQL jobs into dataset-ready records', () => {
+  const job = mapPublicApiJob({
+    id: '123',
+    title: 'Build a Python web scraping workflow',
+    publishedDateTime: '2026-05-29T10:00:00Z',
+    type: 'FIXED',
+    ciphertext: '~02123456789abcdef',
+    description: '<p>Need a reliable scraper for public product data.</p>',
+    skills: [
+      { prettyName: 'Python' },
+      { name: 'web-scraping', prettyName: 'Web Scraping' },
+    ],
+    amount: {
+      rawValue: '1500',
+      currency: 'USD',
+      displayValue: '$1,500',
+    },
+    contractorTier: 'INTERMEDIATE',
+    durationLabel: '1 to 3 months',
+    engagement: 'Less than 30 hrs/week',
+    totalApplicants: 8,
+    client: {
+      totalFeedback: 4.9,
+      location: {
+        country: 'United States',
+      },
+    },
+  }, 'web scraping', { scrapedAt: '2026-05-29T12:00:00.000Z' });
+
+  assert.equal(job.jobTitle, 'Build a Python web scraping workflow');
+  assert.equal(job.jobUrl, 'https://www.upwork.com/jobs/~02123456789abcdef/');
+  assert.equal(job.jobId, '~02123456789abcdef');
+  assert.equal(job.jobType, 'fixed');
+  assert.equal(job.fixedBudget, 1500);
+  assert.equal(job.experienceLevel, 'intermediate');
+  assert.equal(job.clientCountry, 'United States');
+  assert.equal(job.clientRating, 4.9);
+  assert.equal(job.proposalsCount, '8');
+  assert.ok(job.skills.includes('Python'));
 });
 
 test('finalizeJob returns spreadsheet-ready output with keyword score', () => {

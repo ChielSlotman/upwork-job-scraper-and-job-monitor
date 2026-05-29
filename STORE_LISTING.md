@@ -24,6 +24,8 @@ Find fresh Upwork job opportunities faster. Enter keywords such as web scraping,
 
 Upwork Job Scraper and Job Monitor helps freelancers, agencies, lead generators, and automation builders discover relevant public Upwork jobs without manually refreshing search pages. The Actor searches public Upwork job listings, extracts clean opportunity data, filters by budget, job type, experience level, and posted time, removes duplicates, and returns spreadsheet-ready results.
 
+For launch reliability, the Actor supports an official Upwork API mode with encrypted OAuth credentials. Browser scraping is available as a fallback, but Upwork can return HTTP 403 challenge pages to automated browsers.
+
 Use it to build a daily Upwork job alert workflow, track high-budget projects, monitor niche freelance demand, qualify opportunities before spending Connects, or feed structured freelance-market data into your internal tools.
 
 This Actor is positioned as a job discovery and monitoring tool. It does not auto-apply, scrape private messages, scrape freelancer profiles, collect client emails, or bypass Upwork workflows.
@@ -55,6 +57,7 @@ This Actor is positioned as a job discovery and monitoring tool. It does not aut
 ## Main value propositions
 
 - Discover relevant Upwork jobs by keyword and skill.
+- Use official Upwork API mode for reliable production runs.
 - Monitor fresh opportunities with posted-time filters.
 - Export clean job data to CSV, Excel, JSON, Google Sheets, or API.
 - Filter by fixed budget, job type, and experience level.
@@ -88,13 +91,15 @@ This Actor extracts publicly visible job listing information for job discovery, 
 ## Launch checklist
 
 - Confirm Actor name, title, and owner username in Apify Console.
-- Run a smoke test with `keywords: ["web scraping"]` and `maxResults: 10`.
+- Add Upwork API credentials to Actor environment variables or secret input fields.
+- Run an official API smoke test with `keywords: ["web scraping"]`, `sourceMode: "officialApi"`, and `maxResults: 10`.
 - Verify dataset columns render in the Output tab.
 - Export CSV and JSON to confirm spreadsheet-ready formatting.
 - Test with `includeDescription: false` and `includeDescription: true`.
 - Test fixed-price filtering with `minBudget`.
 - Test hourly-only filtering with `jobType: "hourly"`.
 - Confirm Apify Proxy is enabled for cloud runs.
+- Keep browser mode as fallback only because Upwork can block automated browser sessions.
 - Review README and responsible use language.
 - Add Store pricing and usage limits.
 - Publish as a paid Actor.
