@@ -141,10 +141,14 @@
     "proxyConfiguration": {
       "title": "Proxy configuration",
       "type": "object",
-      "description": "Proxy settings for accessing public Upwork pages. Apify Proxy is recommended for cloud runs.",
+      "description": "Proxy settings for accessing public Upwork pages. Upwork commonly blocks datacenter traffic, so Apify Residential proxy is the recommended default for cloud runs.",
       "editor": "proxy",
       "default": {
-        "useApifyProxy": true
+        "useApifyProxy": true,
+        "apifyProxyGroups": [
+          "RESIDENTIAL"
+        ],
+        "apifyProxyCountry": "US"
       },
       "sectionCaption": "Advanced options",
       "sectionDescription": "Tune crawling behavior only when the default settings do not fit your use case."
@@ -152,11 +156,11 @@
     "maxConcurrency": {
       "title": "Maximum concurrency",
       "type": "integer",
-      "description": "Maximum number of pages processed at the same time. Keep low for job monitoring runs.",
+      "description": "Maximum number of pages processed at the same time. Keep this at 1 for Upwork to reduce HTTP 403 responses.",
       "editor": "number",
-      "default": 2,
+      "default": 1,
       "minimum": 1,
-      "maximum": 5
+      "maximum": 3
     },
     "requestTimeoutSecs": {
       "title": "Page timeout",

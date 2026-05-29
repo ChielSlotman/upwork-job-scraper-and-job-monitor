@@ -2,6 +2,7 @@ import { Actor } from 'apify';
 import { PlaywrightCrawler, log } from '@crawlee/playwright';
 import {
   buildSearchUrl,
+  DEFAULT_PROXY_CONFIGURATION,
   detectUpworkChallenge,
   extractJobDetailsFromPage,
   extractJobsFromSearchPage,
@@ -18,6 +19,9 @@ const startedAt = new Date();
 const rawInput = await Actor.getInput();
 const input = normalizeInput(rawInput || {});
 const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfiguration);
+const isUsingDefaultResidentialProxy = input.proxyConfiguration?.useApifyProxy !== false
+  && (input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [])
+    .includes('RESIDENTIAL');
 
 const scrapedAt = new Date().toISOString();
 const collectedJobs = [];
@@ -48,7 +52,15 @@ log.info('Starting Upwork job discovery run', {
   experienceLevel: input.experienceLevel,
   postedWithin: input.postedWithin,
   includeDescription: input.includeDescription,
+  proxyGroups: input.proxyConfiguration?.apifyProxyGroups || input.proxyConfiguration?.groups || [],
+  proxyCountry: input.proxyConfiguration?.apifyProxyCountry || input.proxyConfiguration?.countryCode || null,
 });
+
+if (isUsingDefaultResidentialProxy) {
+  log.info('Using Apify Residential proxy for Upwork access', {
+    recommendedFor: 'reducing HTTP 403 responses on strict public job pages',
+  });
+}
 
 const searchRequests = input.keywords.map((keyword) => ({
   url: buildSearchUrl(keyword),
@@ -61,9 +73,13 @@ const searchCrawler = new PlaywrightCrawler({
   maxConcurrency: input.maxConcurrency,
   requestHandlerTimeoutSecs: input.requestTimeoutSecs,
   navigationTimeoutSecs: input.requestTimeoutSecs,
-  maxRequestRetries: 2,
-  sessionPoolOptions: {
-    blockedStatusCodes: [],
+  maxRequestRetries: 4,
+  maxSessionRotations: 10,
+  retryOnBlocked: true,
+  persistCookiesPerSession: true,
+  browserPoolOptions: {
+    useFingerprints: true,
+    retireBrowserAfterPageCount: 1,
   },
   launchContext: {
     launchOptions: {
@@ -73,6 +89,7 @@ const searchCrawler = new PlaywrightCrawler({
   preNavigationHooks: [
     async ({ page }, gotoOptions) => {
       gotoOptions.waitUntil = 'domcontentloaded';
+      await blockHeavyResources(page);
       await page.setExtraHTTPHeaders({
         'accept-language': 'en-US,en;q=0.9',
       });
@@ -88,7 +105,7 @@ const searchCrawler = new PlaywrightCrawler({
 
     if ([403, 429].includes(response?.status?.())) {
       stats.challengePages += 1;
-      const warning = `Upwork returned HTTP ${response.status()} for keyword "${keyword}". Try Apify Proxy, lower concurrency, or run again later.`;
+      const warning = `Upwork returned HTTP ${response.status()} for keyword "${keyword}" after proxy retries. Use Apify Residential proxy access, keep concurrency at 1, or try again later.`;
       stats.warnings.push(warning);
       log.warning(warning);
       await saveDebugHtml(page, `DEBUG_BLOCKED_${safeKey(keyword)}.html`, input.saveDebugHtml);
@@ -97,7 +114,7 @@ const searchCrawler = new PlaywrightCrawler({
 
     if (await detectUpworkChallenge(page)) {
       stats.challengePages += 1;
-      const warning = `Upwork returned an access challenge for keyword "${keyword}". Try Apify Proxy, lower concurrency, or run again later.`;
+      const warning = `Upwork returned an access challenge for keyword "${keyword}". Use Apify Residential proxy access, keep concurrency at 1, or try again later.`;
       stats.warnings.push(warning);
       log.warning(warning);
       await saveDebugHtml(page, `DEBUG_CHALLENGE_${safeKey(keyword)}.html`, input.saveDebugHtml);
@@ -114,7 +131,7 @@ const searchCrawler = new PlaywrightCrawler({
     if (!rawJobs.length) {
       if (await detectUpworkChallenge(page)) {
         stats.challengePages += 1;
-        const warning = `Upwork returned an access challenge for keyword "${keyword}" after page load. Try Apify Proxy, lower concurrency, or run again later.`;
+        const warning = `Upwork returned an access challenge for keyword "${keyword}" after page load. Use Apify Residential proxy access, keep concurrency at 1, or try again later.`;
         stats.warnings.push(warning);
         log.warning(warning);
         await saveDebugHtml(page, `DEBUG_CHALLENGE_${safeKey(keyword)}.html`, input.saveDebugHtml);
@@ -184,13 +201,18 @@ if (input.includeDescription && collectedJobs.length) {
     maxConcurrency: Math.min(input.maxConcurrency, 2),
     requestHandlerTimeoutSecs: input.requestTimeoutSecs,
     navigationTimeoutSecs: input.requestTimeoutSecs,
-    maxRequestRetries: 1,
-    sessionPoolOptions: {
-      blockedStatusCodes: [],
+    maxRequestRetries: 3,
+    maxSessionRotations: 8,
+    retryOnBlocked: true,
+    persistCookiesPerSession: true,
+    browserPoolOptions: {
+      useFingerprints: true,
+      retireBrowserAfterPageCount: 1,
     },
     preNavigationHooks: [
       async ({ page }, gotoOptions) => {
         gotoOptions.waitUntil = 'domcontentloaded';
+        await blockHeavyResources(page);
         await page.setExtraHTTPHeaders({
           'accept-language': 'en-US,en;q=0.9',
         });
@@ -261,7 +283,7 @@ const finalJobs = collectedJobs
 
 if (!finalJobs.length && stats.challengePages >= input.keywords.length) {
   stats.status = 'blocked';
-  stats.warnings.push('Upwork returned access challenges for all searches and no results could be collected. Use Apify Proxy, reduce concurrency, or try again later.');
+  stats.warnings.push(`Upwork returned access challenges for all searches and no results could be collected. This Actor now defaults to ${DEFAULT_PROXY_CONFIGURATION.apifyProxyGroups[0]} proxy, but your Apify account must have residential proxy access and enough proxy traffic available.`);
 } else if (!finalJobs.length && stats.emptySearchPages >= input.keywords.length && stats.jobsExtractedBeforeFilters === 0) {
   stats.status = 'empty_pages';
   stats.warnings.push('No Upwork job cards were detected on any search page. Upwork may have changed its page structure or blocked access without a standard challenge. Enable saveDebugHtml and inspect the key-value store debug records.');
@@ -300,6 +322,18 @@ async function saveDebugHtml(page, key, enabled) {
   if (html) {
     await Actor.setValue(key, html, { contentType: 'text/html; charset=utf-8' });
   }
+}
+
+async function blockHeavyResources(page) {
+  await page.route('**/*', (route) => {
+    const resourceType = route.request().resourceType();
+
+    if (['image', 'media', 'font'].includes(resourceType)) {
+      return route.abort();
+    }
+
+    return route.continue();
+  }).catch(() => {});
 }
 
 function safeKey(value) {

@@ -15,6 +15,11 @@
   "includeSkills": true,
   "deduplicateResults": true,
   "proxyConfiguration": {
-    "useApifyProxy": true
-  }
+    "useApifyProxy": true,
+    "apifyProxyGroups": [
+      "RESIDENTIAL"
+    ],
+    "apifyProxyCountry": "US"
+  },
+  "maxConcurrency": 1
 }

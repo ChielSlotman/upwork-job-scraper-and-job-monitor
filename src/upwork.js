@@ -10,6 +10,11 @@ import {
 } from './text.js';
 
 export const UPWORK_SEARCH_URL = 'https://www.upwork.com/nx/search/jobs/';
+export const DEFAULT_PROXY_CONFIGURATION = {
+  useApifyProxy: true,
+  apifyProxyGroups: ['RESIDENTIAL'],
+  apifyProxyCountry: 'US',
+};
 
 const SEARCH_SCROLL_ATTEMPTS = 8;
 const COMMON_NON_SKILL_LINES = new Set([
@@ -64,11 +69,37 @@ export function normalizeInput(input = {}) {
     includeDescription: Boolean(input.includeDescription),
     includeSkills: input.includeSkills !== false,
     deduplicateResults: input.deduplicateResults !== false,
-    proxyConfiguration: input.proxyConfiguration ?? { useApifyProxy: true },
-    maxConcurrency: clampInteger(input.maxConcurrency, 2, 1, 5),
+    proxyConfiguration: normalizeProxyConfiguration(input.proxyConfiguration),
+    maxConcurrency: clampInteger(input.maxConcurrency, 1, 1, 3),
     requestTimeoutSecs: clampInteger(input.requestTimeoutSecs, 60, 15, 180),
     saveDebugHtml: Boolean(input.saveDebugHtml),
   };
+}
+
+function normalizeProxyConfiguration(proxyConfiguration) {
+  if (proxyConfiguration?.useApifyProxy === false || proxyConfiguration?.proxyUrls?.length) {
+    return proxyConfiguration;
+  }
+
+  const normalized = {
+    ...DEFAULT_PROXY_CONFIGURATION,
+    ...(proxyConfiguration || {}),
+    useApifyProxy: true,
+  };
+
+  const selectedGroups = normalized.groups?.length
+    ? normalized.groups
+    : normalized.apifyProxyGroups;
+
+  normalized.apifyProxyGroups = selectedGroups?.length
+    ? selectedGroups
+    : DEFAULT_PROXY_CONFIGURATION.apifyProxyGroups;
+
+  if (!normalized.apifyProxyCountry && !normalized.countryCode) {
+    normalized.apifyProxyCountry = DEFAULT_PROXY_CONFIGURATION.apifyProxyCountry;
+  }
+
+  return normalized;
 }
 
 export function buildSearchUrl(keyword) {

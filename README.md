@@ -52,7 +52,7 @@ It can collect fields such as:
 | `includeDescription` | boolean | When true, opens job pages and attempts to extract the full public description. |
 | `includeSkills` | boolean | Extract public skills and tags when visible. |
 | `deduplicateResults` | boolean | Remove duplicate jobs across keyword searches. |
-| `proxyConfiguration` | object | Apify Proxy settings. Apify Proxy is recommended for cloud runs. |
+| `proxyConfiguration` | object | Apify Proxy settings. Apify Residential proxy is recommended for Upwork cloud runs. |
 
 ## Example input
 
@@ -69,8 +69,11 @@ It can collect fields such as:
   "includeSkills": true,
   "deduplicateResults": true,
   "proxyConfiguration": {
-    "useApifyProxy": true
-  }
+    "useApifyProxy": true,
+    "apifyProxyGroups": ["RESIDENTIAL"],
+    "apifyProxyCountry": "US"
+  },
+  "maxConcurrency": 1
 }
 ```
 
@@ -141,7 +144,7 @@ You can also run a tiny local smoke test without Apify Proxy:
 npx apify-cli run --purge --input-file examples/local-smoke-input.json
 ```
 
-Upwork often returns HTTP 403 or a challenge page from residential/local networks. That is expected in some environments; cloud runs should use Apify Proxy.
+Upwork often returns HTTP 403 or a challenge page from cloud datacenter networks. The default input uses Apify Residential proxy with low concurrency because this is much more reliable for Upwork than automatic/datacenter proxy routing. Your Apify account must have residential proxy access and enough proxy traffic available.
 
 ## Exporting results
 
@@ -196,7 +199,7 @@ For the first Store version, pay-per-result is simpler for buyers because value 
 ## Limitations
 
 - Upwork may show access challenges or change page structure. The Actor detects challenge pages and writes useful logs.
-- Upwork is strict about automated access. For production monitoring, use Apify Proxy and consider residential proxy groups if your account has access.
+- Upwork is strict about automated access. For production monitoring, use Apify Residential proxy, keep concurrency low, and expect occasional blocked sessions to be retried.
 - Some fields are only returned when publicly visible on the listing or job page.
 - `includeDescription` is slower because it opens each job page.
 - Posted-time filters depend on visible text such as `Posted 2 hours ago`.
@@ -230,7 +233,7 @@ Yes. Use Apify's dataset export or Apify integrations to send results to Google 
 
 ### What should I do if Upwork returns a challenge page?
 
-Use Apify Proxy, reduce concurrency, keep runs moderate, and try again later. Enable `saveDebugHtml` only when troubleshooting.
+Use Apify Residential proxy, keep `maxConcurrency` at `1`, keep runs moderate, and try again later. Enable `saveDebugHtml` only when troubleshooting.
 
 ## Version 2 ideas
 
