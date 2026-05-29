@@ -71,7 +71,8 @@ const searchCrawler = new PlaywrightCrawler({
     },
   },
   preNavigationHooks: [
-    async ({ page }) => {
+    async ({ page }, gotoOptions) => {
+      gotoOptions.waitUntil = 'domcontentloaded';
       await page.setExtraHTTPHeaders({
         'accept-language': 'en-US,en;q=0.9',
       });
@@ -187,6 +188,14 @@ if (input.includeDescription && collectedJobs.length) {
     sessionPoolOptions: {
       blockedStatusCodes: [],
     },
+    preNavigationHooks: [
+      async ({ page }, gotoOptions) => {
+        gotoOptions.waitUntil = 'domcontentloaded';
+        await page.setExtraHTTPHeaders({
+          'accept-language': 'en-US,en;q=0.9',
+        });
+      },
+    ],
     launchContext: {
       launchOptions: {
         headless: true,

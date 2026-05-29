@@ -196,6 +196,7 @@ For the first Store version, pay-per-result is simpler for buyers because value 
 ## Limitations
 
 - Upwork may show access challenges or change page structure. The Actor detects challenge pages and writes useful logs.
+- Upwork is strict about automated access. For production monitoring, use Apify Proxy and consider residential proxy groups if your account has access.
 - Some fields are only returned when publicly visible on the listing or job page.
 - `includeDescription` is slower because it opens each job page.
 - Posted-time filters depend on visible text such as `Posted 2 hours ago`.
