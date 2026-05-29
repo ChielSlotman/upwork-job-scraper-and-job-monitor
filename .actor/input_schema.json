@@ -1,0 +1,182 @@
+{
+  "title": "Upwork Job Scraper and Job Monitor input",
+  "description": "Find and monitor public Upwork job listings by keyword, budget, job type, experience level, and posted time.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "keywords": {
+      "title": "Keywords",
+      "type": "array",
+      "description": "Search terms to monitor on Upwork. Use specific phrases such as web scraping, python automation, n8n, zapier, Shopify, or data extraction.",
+      "editor": "stringList",
+      "prefill": [
+        "web scraping",
+        "python automation",
+        "n8n",
+        "zapier"
+      ],
+      "example": [
+        "web scraping",
+        "python automation"
+      ],
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "maxResults": {
+      "title": "Maximum jobs",
+      "type": "integer",
+      "description": "Maximum number of matching jobs to return across all keywords.",
+      "editor": "number",
+      "default": 50,
+      "prefill": 50,
+      "example": 100,
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "jobType": {
+      "title": "Job type",
+      "type": "string",
+      "description": "Return fixed-price jobs, hourly jobs, or both.",
+      "editor": "select",
+      "default": "both",
+      "prefill": "both",
+      "enum": [
+        "both",
+        "fixed",
+        "hourly"
+      ],
+      "enumTitles": [
+        "Both fixed and hourly",
+        "Fixed-price only",
+        "Hourly only"
+      ]
+    },
+    "experienceLevel": {
+      "title": "Experience level",
+      "type": "string",
+      "description": "Filter by the experience level shown on Upwork job listings.",
+      "editor": "select",
+      "default": "all",
+      "prefill": "all",
+      "enum": [
+        "all",
+        "entry",
+        "intermediate",
+        "expert"
+      ],
+      "enumTitles": [
+        "All levels",
+        "Entry level",
+        "Intermediate",
+        "Expert"
+      ]
+    },
+    "postedWithin": {
+      "title": "Posted within",
+      "type": "string",
+      "description": "Keep only jobs that appear to be posted within this time window. This is based on publicly visible posted text such as Posted 2 hours ago.",
+      "editor": "select",
+      "default": "all",
+      "prefill": "last7d",
+      "enum": [
+        "all",
+        "last24h",
+        "last7d"
+      ],
+      "enumTitles": [
+        "All available jobs",
+        "Last 24 hours",
+        "Last 7 days"
+      ]
+    },
+    "minBudget": {
+      "title": "Minimum fixed budget",
+      "type": "integer",
+      "description": "Optional minimum fixed-price budget in USD. Hourly jobs are not filtered by this value.",
+      "editor": "number",
+      "nullable": true,
+      "example": 500,
+      "minimum": 0
+    },
+    "maxBudget": {
+      "title": "Maximum fixed budget",
+      "type": "integer",
+      "description": "Optional maximum fixed-price budget in USD. Hourly jobs are not filtered by this value.",
+      "editor": "number",
+      "nullable": true,
+      "example": 5000,
+      "minimum": 0
+    },
+    "includeDescription": {
+      "title": "Include full description",
+      "type": "boolean",
+      "description": "Open each public job page and try to include the full job description. This is slower and may use more compute units.",
+      "editor": "checkbox",
+      "default": false,
+      "prefill": false,
+      "example": true
+    },
+    "includeSkills": {
+      "title": "Include skills",
+      "type": "boolean",
+      "description": "Extract publicly visible skills and tags when available.",
+      "editor": "checkbox",
+      "default": true,
+      "prefill": true,
+      "example": true
+    },
+    "deduplicateResults": {
+      "title": "Deduplicate jobs",
+      "type": "boolean",
+      "description": "Remove duplicate jobs across multiple keyword searches using job ID or job URL.",
+      "editor": "checkbox",
+      "default": true,
+      "prefill": true,
+      "example": true
+    },
+    "proxyConfiguration": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Proxy settings for accessing public Upwork pages. Apify Proxy is recommended for cloud runs.",
+      "editor": "proxy",
+      "default": {
+        "useApifyProxy": true
+      },
+      "sectionCaption": "Advanced options",
+      "sectionDescription": "Tune crawling behavior only when the default settings do not fit your use case."
+    },
+    "maxConcurrency": {
+      "title": "Maximum concurrency",
+      "type": "integer",
+      "description": "Maximum number of pages processed at the same time. Keep low for job monitoring runs.",
+      "editor": "number",
+      "default": 2,
+      "minimum": 1,
+      "maximum": 5
+    },
+    "requestTimeoutSecs": {
+      "title": "Page timeout",
+      "type": "integer",
+      "description": "Maximum time in seconds to wait for each Upwork search or job detail page.",
+      "editor": "number",
+      "default": 60,
+      "minimum": 15,
+      "maximum": 180
+    },
+    "saveDebugHtml": {
+      "title": "Save debug HTML",
+      "type": "boolean",
+      "description": "Save blocked or empty search-page HTML to the key-value store for troubleshooting. Keep disabled for normal runs.",
+      "editor": "checkbox",
+      "default": false
+    }
+  },
+  "required": [
+    "keywords",
+    "maxResults"
+  ]
+}

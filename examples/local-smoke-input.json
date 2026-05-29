@@ -1,0 +1,17 @@
+{
+  "keywords": [
+    "web scraping"
+  ],
+  "maxResults": 1,
+  "jobType": "both",
+  "experienceLevel": "all",
+  "postedWithin": "all",
+  "includeDescription": false,
+  "includeSkills": true,
+  "deduplicateResults": true,
+  "proxyConfiguration": {
+    "useApifyProxy": false
+  },
+  "maxConcurrency": 1,
+  "requestTimeoutSecs": 20
+}

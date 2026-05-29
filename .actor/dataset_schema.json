@@ -1,0 +1,296 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "jobTitle": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Job title",
+        "description": "The public Upwork job title.",
+        "example": "Python web scraping automation specialist"
+      },
+      "jobUrl": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Job URL",
+        "description": "Direct URL to the original public Upwork job listing.",
+        "example": "https://www.upwork.com/jobs/~0123456789abcdef"
+      },
+      "jobId": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Job ID",
+        "description": "Upwork job identifier parsed from the URL or page data when available.",
+        "example": "~0123456789abcdef"
+      },
+      "postedAt": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Posted at",
+        "description": "Public posted time text or normalized ISO timestamp when it can be inferred.",
+        "example": "2026-05-29T08:30:00.000Z"
+      },
+      "scrapedAt": {
+        "type": "string",
+        "title": "Scraped at",
+        "description": "ISO timestamp when this Actor scraped the record.",
+        "example": "2026-05-29T10:15:00.000Z"
+      },
+      "jobType": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Job type",
+        "description": "Payment type displayed by Upwork, usually fixed or hourly.",
+        "example": "fixed"
+      },
+      "fixedBudget": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "Fixed budget",
+        "description": "Fixed-price job budget in USD when visible.",
+        "example": 1200
+      },
+      "hourlyMin": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "Hourly min",
+        "description": "Minimum hourly rate in USD when visible.",
+        "example": 30
+      },
+      "hourlyMax": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "Hourly max",
+        "description": "Maximum hourly rate in USD when visible.",
+        "example": 75
+      },
+      "experienceLevel": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Experience level",
+        "description": "Experience level shown on the job, such as entry, intermediate, or expert.",
+        "example": "intermediate"
+      },
+      "estimatedDuration": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Estimated duration",
+        "description": "Estimated project duration shown on Upwork.",
+        "example": "1 to 3 months"
+      },
+      "workload": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Workload",
+        "description": "Expected weekly workload when visible.",
+        "example": "Less than 30 hrs/week"
+      },
+      "skills": {
+        "type": "array",
+        "title": "Skills",
+        "description": "Public job skills or tags extracted from the listing.",
+        "items": {
+          "type": "string"
+        },
+        "example": [
+          "Python",
+          "Web Scraping",
+          "Automation"
+        ]
+      },
+      "descriptionSnippet": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Description snippet",
+        "description": "Short job description text visible in the search results.",
+        "example": "We need a Python developer to build a scraper and automate data exports."
+      },
+      "fullDescription": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Full description",
+        "description": "Full public job description when includeDescription is enabled and available.",
+        "example": "We need a Python developer to build a scraper and automate data exports..."
+      },
+      "clientCountry": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Client country",
+        "description": "Client country when publicly visible on the listing.",
+        "example": "United States"
+      },
+      "clientRating": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "title": "Client rating",
+        "description": "Client rating when publicly visible.",
+        "example": 4.9
+      },
+      "clientSpent": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Client spent",
+        "description": "Public total client spend text when visible.",
+        "example": "$10K+ spent"
+      },
+      "proposalsCount": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "title": "Proposals count",
+        "description": "Public proposal-count bucket when visible, such as Less than 5 or 20 to 50.",
+        "example": "Less than 5"
+      },
+      "sourceSearchKeyword": {
+        "type": "string",
+        "title": "Source keyword",
+        "description": "Input keyword that produced this result.",
+        "example": "web scraping"
+      },
+      "matchedKeywords": {
+        "type": "array",
+        "title": "Matched keywords",
+        "description": "Input keywords that appear in the title, description, or skills.",
+        "items": {
+          "type": "string"
+        },
+        "example": [
+          "web scraping",
+          "python automation"
+        ]
+      },
+      "relevanceScore": {
+        "type": "number",
+        "title": "Relevance score",
+        "description": "Simple 0-100 score based on keyword, skill, budget, experience, and recency matches.",
+        "example": 86
+      }
+    },
+    "required": [
+      "jobTitle",
+      "jobUrl",
+      "scrapedAt",
+      "sourceSearchKeyword",
+      "matchedKeywords",
+      "relevanceScore"
+    ]
+  },
+  "views": {
+    "overview": {
+      "title": "Upwork jobs",
+      "description": "Clean table of public Upwork job opportunities matching the input filters.",
+      "transformation": {
+        "fields": [
+          "jobTitle",
+          "jobUrl",
+          "postedAt",
+          "jobType",
+          "fixedBudget",
+          "hourlyMin",
+          "hourlyMax",
+          "experienceLevel",
+          "estimatedDuration",
+          "workload",
+          "skills",
+          "descriptionSnippet",
+          "clientCountry",
+          "clientRating",
+          "clientSpent",
+          "proposalsCount",
+          "sourceSearchKeyword",
+          "matchedKeywords",
+          "relevanceScore",
+          "scrapedAt"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "jobTitle": {
+            "label": "Job title",
+            "format": "text"
+          },
+          "jobUrl": {
+            "label": "URL",
+            "format": "link"
+          },
+          "postedAt": {
+            "label": "Posted",
+            "format": "date"
+          },
+          "jobType": {
+            "label": "Type",
+            "format": "text"
+          },
+          "fixedBudget": {
+            "label": "Fixed budget",
+            "format": "number"
+          },
+          "hourlyMin": {
+            "label": "Hourly min",
+            "format": "number"
+          },
+          "hourlyMax": {
+            "label": "Hourly max",
+            "format": "number"
+          },
+          "experienceLevel": {
+            "label": "Experience",
+            "format": "text"
+          },
+          "skills": {
+            "label": "Skills",
+            "format": "array"
+          },
+          "matchedKeywords": {
+            "label": "Matched keywords",
+            "format": "array"
+          },
+          "relevanceScore": {
+            "label": "Score",
+            "format": "number"
+          },
+          "scrapedAt": {
+            "label": "Scraped",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+[
+  {
+    "jobTitle": "Python web scraping automation specialist",
+    "jobUrl": "https://www.upwork.com/jobs/Python-Scraper_~0123456789abcdef/",
+    "jobId": "~0123456789abcdef",
+    "postedAt": "2026-05-29T09:00:00.000Z",
+    "scrapedAt": "2026-05-29T12:00:00.000Z",
+    "jobType": "fixed",
+    "fixedBudget": 1200,
+    "hourlyMin": null,
+    "hourlyMax": null,
+    "experienceLevel": "intermediate",
+    "estimatedDuration": "1 to 3 months",
+    "workload": "Less than 30 hrs/week",
+    "skills": [
+      "Python",
+      "Web Scraping",
+      "Automation"
+    ],
+    "descriptionSnippet": "We need a Python developer to build a reliable scraping workflow for public product data and export clean CSV files.",
+    "fullDescription": null,
+    "clientCountry": "United States",
+    "clientRating": 4.9,
+    "clientSpent": "$10K+ spent",
+    "proposalsCount": "Less than 5",
+    "sourceSearchKeyword": "web scraping",
+    "matchedKeywords": [
+      "web scraping",
+      "python automation"
+    ],
+    "relevanceScore": 88
+  }
+]

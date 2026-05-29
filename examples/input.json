@@ -1,0 +1,20 @@
+{
+  "keywords": [
+    "web scraping",
+    "python automation",
+    "n8n",
+    "zapier"
+  ],
+  "maxResults": 50,
+  "jobType": "both",
+  "experienceLevel": "all",
+  "postedWithin": "last7d",
+  "minBudget": 500,
+  "maxBudget": null,
+  "includeDescription": false,
+  "includeSkills": true,
+  "deduplicateResults": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}
