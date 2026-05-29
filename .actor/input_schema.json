@@ -1,239 +1,152 @@
 {
-  "title": "Upwork Job Scraper and Job Monitor input",
-  "description": "Find and monitor public Upwork job listings by keyword, budget, job type, experience level, and posted time.",
+  "title": "Substack Publication and Post Scraper input",
+  "description": "Extract public Substack publication, author, and post data from publication URLs and direct post URLs. The Actor only collects publicly visible information and does not use login sessions or bypass paywalls.",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
-    "keywords": {
-      "title": "Keywords",
+    "publicationUrls": {
+      "title": "Publication URLs",
       "type": "array",
-      "description": "Search terms to monitor on Upwork. Use specific phrases such as web scraping, python automation, n8n, zapier, Shopify, or data extraction.",
+      "description": "One or more public Substack publication URLs. The Actor reads the public publication page and public RSS feed, then opens public post pages for metadata and optional article text.",
       "editor": "stringList",
       "prefill": [
-        "web scraping",
-        "python automation",
-        "n8n",
-        "zapier"
+        "https://astralcodexten.substack.com"
       ],
       "example": [
-        "web scraping",
-        "python automation"
+        "https://astralcodexten.substack.com",
+        "https://newsletter.pragmaticengineer.com"
       ],
-      "minItems": 1,
       "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1
       }
     },
-    "sourceMode": {
-      "title": "Data source",
-      "type": "string",
-      "description": "Choose how the Actor gets Upwork jobs. Auto uses the official Upwork API when credentials are configured, then falls back to public browser scraping. Official API is recommended for Store launch reliability.",
-      "editor": "select",
-      "default": "auto",
-      "prefill": "auto",
-      "enum": [
-        "auto",
-        "officialApi",
-        "browser"
+    "postUrls": {
+      "title": "Direct post URLs",
+      "type": "array",
+      "description": "Optional direct public Substack post URLs. Use this when you already know the exact posts to extract.",
+      "editor": "stringList",
+      "prefill": [],
+      "example": [
+        "https://www.astralcodexten.com/p/book-review-the-dialectical-imagination"
       ],
-      "enumTitles": [
-        "Auto - official API when available",
-        "Official Upwork API",
-        "Browser scraping fallback"
-      ]
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "maxResults": {
-      "title": "Maximum jobs",
+    "maxPostsPerPublication": {
+      "title": "Max posts per publication",
       "type": "integer",
-      "description": "Maximum number of matching jobs to return across all keywords.",
+      "description": "Maximum number of public posts to collect from each publication feed.",
       "editor": "number",
-      "default": 50,
-      "prefill": 50,
-      "example": 100,
+      "default": 25,
+      "prefill": 25,
+      "example": 50,
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 500
     },
-    "jobType": {
-      "title": "Job type",
-      "type": "string",
-      "description": "Return fixed-price jobs, hourly jobs, or both.",
-      "editor": "select",
-      "default": "both",
-      "prefill": "both",
-      "enum": [
-        "both",
-        "fixed",
-        "hourly"
-      ],
-      "enumTitles": [
-        "Both fixed and hourly",
-        "Fixed-price only",
-        "Hourly only"
-      ]
-    },
-    "experienceLevel": {
-      "title": "Experience level",
-      "type": "string",
-      "description": "Filter by the experience level shown on Upwork job listings.",
-      "editor": "select",
-      "default": "all",
-      "prefill": "all",
-      "enum": [
-        "all",
-        "entry",
-        "intermediate",
-        "expert"
-      ],
-      "enumTitles": [
-        "All levels",
-        "Entry level",
-        "Intermediate",
-        "Expert"
-      ]
-    },
-    "postedWithin": {
-      "title": "Posted within",
-      "type": "string",
-      "description": "Keep only jobs that appear to be posted within this time window. This is based on publicly visible posted text such as Posted 2 hours ago.",
-      "editor": "select",
-      "default": "all",
-      "prefill": "last7d",
-      "enum": [
-        "all",
-        "last24h",
-        "last7d"
-      ],
-      "enumTitles": [
-        "All available jobs",
-        "Last 24 hours",
-        "Last 7 days"
-      ]
-    },
-    "minBudget": {
-      "title": "Minimum fixed budget",
-      "type": "integer",
-      "description": "Optional minimum fixed-price budget in USD. Hourly jobs are not filtered by this value.",
-      "editor": "number",
-      "nullable": true,
-      "example": 500,
-      "minimum": 0
-    },
-    "maxBudget": {
-      "title": "Maximum fixed budget",
-      "type": "integer",
-      "description": "Optional maximum fixed-price budget in USD. Hourly jobs are not filtered by this value.",
-      "editor": "number",
-      "nullable": true,
-      "example": 5000,
-      "minimum": 0
-    },
-    "includeDescription": {
-      "title": "Include full description",
+    "includePostText": {
+      "title": "Include public post text",
       "type": "boolean",
-      "description": "Include full public job descriptions when available. Official API mode can return this directly; browser mode opens each public job page and may use more compute.",
-      "editor": "checkbox",
-      "default": false,
-      "prefill": false,
-      "example": true
-    },
-    "includeSkills": {
-      "title": "Include skills",
-      "type": "boolean",
-      "description": "Extract publicly visible skills and tags when available.",
+      "description": "When enabled, include the publicly visible article body or public preview text. Paid subscriber-only content is not accessed.",
       "editor": "checkbox",
       "default": true,
       "prefill": true,
       "example": true
+    },
+    "includeExcerpt": {
+      "title": "Include excerpts",
+      "type": "boolean",
+      "description": "Include public excerpts from RSS feeds or page metadata when available.",
+      "editor": "checkbox",
+      "default": true,
+      "prefill": true,
+      "example": true
+    },
+    "includeAuthorInfo": {
+      "title": "Include author info",
+      "type": "boolean",
+      "description": "Include publicly visible author names and author profile URLs when available.",
+      "editor": "checkbox",
+      "default": true,
+      "prefill": true,
+      "example": true
+    },
+    "includePublicationInfo": {
+      "title": "Include publication info",
+      "type": "boolean",
+      "description": "Include publication name, URL, description, logo, and visible topic/category fields when available.",
+      "editor": "checkbox",
+      "default": true,
+      "prefill": true,
+      "example": true
+    },
+    "dateFrom": {
+      "title": "Date from",
+      "type": "string",
+      "description": "Optional start date filter. Posts published before this date are skipped.",
+      "editor": "datepicker",
+      "nullable": true,
+      "example": "2026-01-01"
+    },
+    "dateTo": {
+      "title": "Date to",
+      "type": "string",
+      "description": "Optional end date filter. Posts published after this date are skipped.",
+      "editor": "datepicker",
+      "nullable": true,
+      "example": "2026-12-31"
     },
     "deduplicateResults": {
-      "title": "Deduplicate jobs",
+      "title": "Deduplicate results",
       "type": "boolean",
-      "description": "Remove duplicate jobs across multiple keyword searches using job ID or job URL.",
+      "description": "Remove duplicate posts across publication feeds and direct post URLs using normalized post URLs.",
       "editor": "checkbox",
       "default": true,
       "prefill": true,
       "example": true
-    },
-    "upworkApiAccessToken": {
-      "title": "Upwork API access token",
-      "type": "string",
-      "description": "Optional encrypted Upwork OAuth access token. Leave empty if you configured UPWORK_API_ACCESS_TOKEN as an Actor environment variable or want to use browser fallback.",
-      "editor": "textfield",
-      "isSecret": true,
-      "sectionCaption": "Official API access",
-      "sectionDescription": "Recommended for reliable Store usage. You can provide an access token, or client credentials below. For a public Actor, configure these as Actor environment variables so buyers only enter search filters."
-    },
-    "upworkApiClientId": {
-      "title": "Upwork API client ID",
-      "type": "string",
-      "description": "Optional encrypted Upwork OAuth client ID. Used with client secret to request an access token.",
-      "editor": "textfield",
-      "isSecret": true
-    },
-    "upworkApiClientSecret": {
-      "title": "Upwork API client secret",
-      "type": "string",
-      "description": "Optional encrypted Upwork OAuth client secret. Used with client ID to request an access token.",
-      "editor": "textfield",
-      "isSecret": true
-    },
-    "upworkApiRefreshToken": {
-      "title": "Upwork API refresh token",
-      "type": "string",
-      "description": "Optional encrypted Upwork OAuth refresh token. If provided with client ID and secret, the Actor uses the refresh-token grant instead of client credentials.",
-      "editor": "textfield",
-      "isSecret": true
-    },
-    "upworkApiTenantId": {
-      "title": "Upwork API tenant ID",
-      "type": "string",
-      "description": "Optional Upwork organization or tenant ID for the X-Upwork-API-TenantId header. Leave empty unless your API key requires a specific organization context.",
-      "editor": "textfield"
-    },
-    "proxyConfiguration": {
-      "title": "Proxy configuration",
-      "type": "object",
-      "description": "Proxy settings for accessing public Upwork pages. Upwork commonly blocks datacenter traffic, so Apify Residential proxy is the recommended default for cloud runs.",
-      "editor": "proxy",
-      "default": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": [
-          "RESIDENTIAL"
-        ]
-      },
-      "sectionCaption": "Advanced options",
-      "sectionDescription": "Tune crawling behavior only when the default settings do not fit your use case."
     },
     "maxConcurrency": {
       "title": "Maximum concurrency",
       "type": "integer",
-      "description": "Maximum number of pages processed at the same time. Keep this at 1 for Upwork to reduce HTTP 403 responses.",
+      "description": "Maximum number of public post pages fetched at the same time. Lower this if a publication responds slowly.",
       "editor": "number",
-      "default": 1,
+      "default": 5,
       "minimum": 1,
-      "maximum": 3
+      "maximum": 10,
+      "sectionCaption": "Advanced options",
+      "sectionDescription": "The defaults are tuned for moderate, responsible public-page collection."
     },
     "requestTimeoutSecs": {
-      "title": "Page timeout",
+      "title": "Request timeout",
       "type": "integer",
-      "description": "Maximum time in seconds to wait for each Upwork search or job detail page.",
+      "description": "Maximum seconds to wait for each public Substack page or feed request.",
       "editor": "number",
-      "default": 60,
-      "minimum": 15,
-      "maximum": 180
+      "default": 30,
+      "minimum": 10,
+      "maximum": 120
+    },
+    "maxRetries": {
+      "title": "Request retries",
+      "type": "integer",
+      "description": "Number of retries for temporary network or HTTP failures.",
+      "editor": "number",
+      "default": 2,
+      "minimum": 0,
+      "maximum": 5
     },
     "saveDebugHtml": {
       "title": "Save debug HTML",
       "type": "boolean",
-      "description": "Save blocked or empty search-page HTML to the key-value store for troubleshooting. Keep disabled for normal runs.",
+      "description": "Save fetched post HTML to the key-value store for troubleshooting. Keep disabled for normal runs.",
       "editor": "checkbox",
       "default": false
     }
   },
   "required": [
-    "keywords",
-    "maxResults"
+    "maxPostsPerPublication"
   ]
 }

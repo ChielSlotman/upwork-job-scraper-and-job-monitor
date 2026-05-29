@@ -1,12 +1,12 @@
 {
   "actorSpecification": 1,
-  "name": "upwork-job-scraper-and-job-monitor",
-  "title": "Upwork Job Scraper and Job Monitor",
+  "name": "substack-publication-and-post-scraper",
+  "title": "Substack Publication and Post Scraper",
   "version": "1.0",
   "buildTag": "latest",
-  "minMemoryMbytes": 1024,
-  "maxMemoryMbytes": 4096,
-  "defaultMemoryMbytes": 2048,
+  "minMemoryMbytes": 256,
+  "maxMemoryMbytes": 2048,
+  "defaultMemoryMbytes": 512,
   "dockerfile": "../Dockerfile",
   "readme": "../README.md",
   "input": "./input_schema.json",
@@ -15,6 +15,6 @@
     "dataset": "./dataset_schema.json"
   },
   "meta": {
-    "templateId": "js-crawlee-playwright-chrome"
+    "templateId": "js-empty"
   }
 }

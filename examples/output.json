@@ -1,33 +1,27 @@
 [
   {
-    "jobTitle": "Python web scraping automation specialist",
-    "jobUrl": "https://www.upwork.com/jobs/Python-Scraper_~0123456789abcdef/",
-    "jobId": "~0123456789abcdef",
-    "postedAt": "2026-05-29T09:00:00.000Z",
-    "scrapedAt": "2026-05-29T12:00:00.000Z",
-    "jobType": "fixed",
-    "fixedBudget": 1200,
-    "hourlyMin": null,
-    "hourlyMax": null,
-    "experienceLevel": "intermediate",
-    "estimatedDuration": "1 to 3 months",
-    "workload": "Less than 30 hrs/week",
-    "skills": [
-      "Python",
-      "Web Scraping",
-      "Automation"
-    ],
-    "descriptionSnippet": "We need a Python developer to build a reliable scraping workflow for public product data and export clean CSV files.",
-    "fullDescription": null,
-    "clientCountry": "United States",
-    "clientRating": 4.9,
-    "clientSpent": "$10K+ spent",
-    "proposalsCount": "Less than 5",
-    "sourceSearchKeyword": "web scraping",
-    "matchedKeywords": [
-      "web scraping",
-      "python automation"
-    ],
-    "relevanceScore": 88
+    "publicationName": "Astral Codex Ten",
+    "publicationUrl": "https://www.astralcodexten.com",
+    "publicationDescription": "P(A|B) = [P(A)*P(B|A)]/P(B), all the rest is commentary.",
+    "publicationLogo": "https://substackcdn.com/image/fetch/...",
+    "publicationTopic": null,
+    "postTitle": "Book Review: The Dialectical Imagination",
+    "postUrl": "https://www.astralcodexten.com/p/book-review-the-dialectical-imagination",
+    "postSlug": "book-review-the-dialectical-imagination",
+    "authorName": "Scott Alexander",
+    "authorUrl": null,
+    "publishedAt": "2026-05-29T15:01:57.000Z",
+    "updatedAt": "2026-05-29T15:01:57.859Z",
+    "excerpt": "...",
+    "publicPostText": "The visible public article text or public preview text...",
+    "isPaidPreview": false,
+    "isPubliclyReadable": true,
+    "accessStatus": "public",
+    "likesCount": 22,
+    "commentsCount": null,
+    "imageUrl": "https://substackcdn.com/image/fetch/...",
+    "tags": [],
+    "sourceInputUrl": "https://astralcodexten.substack.com",
+    "scrapedAt": "2026-05-29T12:00:00.000Z"
   }
 ]

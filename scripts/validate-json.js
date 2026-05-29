@@ -5,7 +5,9 @@ const files = [
   '.actor/actor.json',
   '.actor/input_schema.json',
   '.actor/dataset_schema.json',
+  '.actor/output_schema.json',
   'examples/input.json',
+  'examples/api-input.json',
   'examples/local-smoke-input.json',
   'examples/output.json',
 ];

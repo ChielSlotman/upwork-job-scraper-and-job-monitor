@@ -1,18 +1,15 @@
 {
-  "keywords": [
-    "web scraping"
+  "publicationUrls": [
+    "https://astralcodexten.substack.com"
   ],
-  "sourceMode": "browser",
-  "maxResults": 1,
-  "jobType": "both",
-  "experienceLevel": "all",
-  "postedWithin": "all",
-  "includeDescription": false,
-  "includeSkills": true,
+  "postUrls": [],
+  "maxPostsPerPublication": 2,
+  "includePostText": false,
+  "includeExcerpt": true,
+  "includeAuthorInfo": true,
+  "includePublicationInfo": true,
   "deduplicateResults": true,
-  "proxyConfiguration": {
-    "useApifyProxy": false
-  },
-  "maxConcurrency": 1,
-  "requestTimeoutSecs": 20
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRetries": 1
 }
